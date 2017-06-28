@@ -12,7 +12,7 @@ import okhttp3.Request
 import okhttp3.Response
 import reed.flyingreed.KotlinApplication
 import reed.flyingreed.model.Model
-import reed.flyingreed.model.Song
+import reed.flyingreed.model.Music
 import reed.flyingreed.model.Template
 
 
@@ -56,12 +56,12 @@ object DataFetcher {
             if (cursor.count > 0) {
                 val albumUri = Uri.parse("content://media/external/audio/albumart")
                 while (cursor.moveToNext()) {
-                    val song = Song(title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)),
+                    val song = Music(title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)),
                             path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)),
                             id = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media._ID)),
                             artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)),
                             cover = ContentUris.withAppendedId(albumUri, cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID))))
-                    models.add(Model(song = song,
+                    models.add(Model(music = song,
                             cover = song.cover,
                             title = song.title,
                             id = song.id,

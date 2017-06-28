@@ -37,11 +37,11 @@ class MainActivity : AppCompatActivity() {
         checkPermission()
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-        var fragment = supportFragmentManager.findFragmentById(R.id.wrapper)
+        var fragment = supportFragmentManager.findFragmentById(R.id.container)
 
         if (fragment == null) {
             fragment = ListFragment.instance
-            supportFragmentManager.beginTransaction().add(R.id.wrapper, fragment).commit()
+            supportFragmentManager.beginTransaction().add(R.id.container, fragment).commit()
         }
     }
 

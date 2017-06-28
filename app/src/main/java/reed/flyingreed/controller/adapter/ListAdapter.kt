@@ -8,6 +8,7 @@ import reed.flyingreed.model.ViewHolder
 import reed.flyingreed.mvvm.ViewGroupManager
 import reed.flyingreed.mvvm.ViewModel
 import reed.flyingreed.mvvm.viewmanagers.BaseViewManager
+import reed.flyingreed.mvvm.viewmanagers.CommandViewManager
 
 /**
  * Created by thinkreed on 2017/6/17.
@@ -30,6 +31,7 @@ class ListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     .add(R.id.title, BaseViewManager())
                     .add(R.id.description, BaseViewManager())
                     .add(R.id.cover, BaseViewManager())
+                    .add(0, CommandViewManager())
                   )
             else -> throw IllegalArgumentException("not support type")
         }

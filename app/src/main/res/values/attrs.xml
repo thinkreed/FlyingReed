@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PlayPauseProgress">
+        <attr name="stroke_width" format="dimension"/>
+        <attr name="center_image" format="reference"/>
+    </declare-styleable>
+</resources>
