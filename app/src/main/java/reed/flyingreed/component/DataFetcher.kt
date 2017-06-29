@@ -11,7 +11,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import reed.flyingreed.KotlinApplication
+import reed.flyingreed.controller.activity.PlayerActivity
 import reed.flyingreed.model.Model
+import reed.flyingreed.model.Motivation
 import reed.flyingreed.model.Music
 import reed.flyingreed.model.Template
 
@@ -66,7 +68,8 @@ object DataFetcher {
                             title = song.title,
                             id = song.id,
                             template = Template.ITEM_MUSIC_INFO,
-                            description = song.artist))
+                            description = song.artist,
+                            motivation = Motivation(PlayerActivity::class.java)))
                 }
             }
             cursor.close()
