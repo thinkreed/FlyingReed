@@ -20,6 +20,8 @@ import kotlinx.android.synthetic.main.fragment_list.*
 
 class ListFragment : Fragment() {
 
+    private lateinit var songs:SongsViewModel
+
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater?.inflate(R.layout.fragment_list, container, false)
     }
@@ -28,11 +30,16 @@ class ListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         list.layoutManager = LinearLayoutManager(activity)
         val adapter = ListAdapter()
-        val songs = SongsViewModel(adapter)
+        songs = SongsViewModel(adapter)
         DataFetcher.registerObserver(songs)
         adapter.setViewModel(songs)
         list.adapter = adapter
         DataFetcher.getData(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
+    }
+
+    override fun onDestroyView() {
+        DataFetcher.unregisterObserver(songs)
+        super.onDestroyView()
     }
 
     companion object {

@@ -10,6 +10,6 @@ import reed.flyingreed.controller.fragment.PlayerFragment
 class PlayerActivity : FragmentActivity() {
 
     override fun getFragment(): Fragment {
-        return PlayerFragment.getInstance(intent)
+        return PlayerFragment.getInstance(intent.extras)
     }
 }

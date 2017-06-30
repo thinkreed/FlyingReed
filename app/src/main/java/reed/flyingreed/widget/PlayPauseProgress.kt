@@ -2,16 +2,14 @@ package reed.flyingreed.widget
 
 import android.content.Context
 import android.graphics.*
+import android.support.annotation.ColorInt
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.ImageView
 
 import android.widget.Scroller
-import com.bumptech.glide.Glide
-import com.bumptech.glide.Glide.init
 
 import reed.flyingreed.R
 import kotlinx.android.synthetic.main.control_play_pause.view.*
@@ -54,31 +52,37 @@ class PlayPauseProgress(context: Context, attrs: AttributeSet) : FrameLayout(con
         PointF()
     }
     private val mPath by lazy { Path() }
+    private var mColor = 0
 
     init {
         if (!isInEditMode) {
+            //允许绘制
             setWillNotDraw(false)
+            //加载布局
             LayoutInflater.from(context).inflate(R.layout.control_play_pause, this, true)
             mPlayImage = center_image
             mPlayImage.setOnClickListener {
                 when (mState) {
                     State.UPDATING -> {
                         mState = State.IDLE
+                        mProgressPaint.color = resources.getColor(R.color.colorWhite)
                     }
                     State.IDLE -> {
                         mState = State.UPDATING
+                        mProgressPaint.color = resources.getColor(mColor)
                     }
                     else -> return@setOnClickListener
                 }
                 postInvalidate()
                 mOnStateChangeListener.onStateChanged(mState)
             }
+            //获取xml中定义的属性
             val a = context.theme.obtainStyledAttributes(attrs, R.styleable.PlayPauseProgress, 0, 0)
             mStrokeWidth = a.getDimension(R.styleable.PlayPauseProgress_stroke_width, 0f)
-            mProgressPaint.color = resources.getColor(R.color.colorAccent)
+            mProgressPaint.color = resources.getColor(android.R.color.transparent)
             mProgressPaint.strokeWidth = mStrokeWidth
             mProgressPaint.style = Paint.Style.STROKE
-            mCirclePaint.color = resources.getColor(R.color.colorGrey)
+            mCirclePaint.color = resources.getColor(R.color.colorLightGray)
             mCirclePaint.style = Paint.Style.STROKE
             mCirclePaint.strokeWidth = mStrokeWidth
             mContext = context
@@ -90,17 +94,21 @@ class PlayPauseProgress(context: Context, attrs: AttributeSet) : FrameLayout(con
 
     override fun onDraw(canvas: Canvas?) {
         canvas?.let {
+            //绘制已走完的弧线
             canvas.drawArc(mRectF, 270f + mSweeppedAngle,
                     360f - mSweeppedAngle, false, mCirclePaint)
+            //绘制未走完的弧线
             canvas.drawArc(mRectF, 270f, mSweeppedAngle, false, mProgressPaint)
             when (mState) {
                 State.UPDATING -> {
+                    //绘制暂停
                     canvas.drawLine(mLeftTopPoint.x, mLeftTopPoint.y, mLeftBottomPoint.x,
                             mLeftBottomPoint.y, mProgressPaint)
                     canvas.drawLine(mRightTopPoint.x, mRightTopPoint.y, mRightBottomPoint.x,
                             mRightBottomPoint.y, mProgressPaint)
                 }
                 State.IDLE -> {
+                    //绘制播放按钮
                     mPath.moveTo(mLeftTopPoint.x, mLeftTopPoint.y)
                     mPath.lineTo(mLeftBottomPoint.x, mLeftBottomPoint.y)
                     mPath.lineTo(mRightCenterPoint.x, mRightCenterPoint.y)
@@ -124,6 +132,7 @@ class PlayPauseProgress(context: Context, attrs: AttributeSet) : FrameLayout(con
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        //相对parent的坐标
         mRectF.left = mStrokeWidth
         mRectF.right = right - left - mStrokeWidth
         mRectF.top = mStrokeWidth
@@ -135,30 +144,39 @@ class PlayPauseProgress(context: Context, attrs: AttributeSet) : FrameLayout(con
             val height = child.measuredHeight
             val cl = (right - left - width) / 2
             val ct = (bottom - top - height) / 2
+            val cc = (bottom - top) / 2
+            val sqrt3 = Math.sqrt(3.0)
+            //等边三角形的播放按钮，边长为2 * sqrt(3) * width /4
             mLeftTopPoint.x = (cl + width / 4).toFloat()
-            mLeftTopPoint.y = (ct + height / 4).toFloat()
+            mLeftTopPoint.y = (cc - width / 4 * sqrt3).toFloat()
             mLeftBottomPoint.x = (cl + width / 4).toFloat()
-            mLeftBottomPoint.y = (ct + height / 4 * 3).toFloat()
+            mLeftBottomPoint.y = (cc + width / 4 * sqrt3).toFloat()
             mRightTopPoint.x = (cl + width / 4 * 3).toFloat()
-            mRightTopPoint.y = (ct + height / 4).toFloat()
-            mRightCenterPoint.x = (cl + width / 4 * 3).toFloat()
-            mRightCenterPoint.y = (ct + width / 2).toFloat()
+            mRightTopPoint.y = (cc - width / 4 * sqrt3).toFloat()
+            mRightCenterPoint.x = (cl + width).toFloat()
+            mRightCenterPoint.y = cc.toFloat()
             mRightBottomPoint.x = (cl + width / 4 * 3).toFloat()
-            mRightBottomPoint.y = (ct + height / 4 * 3).toFloat()
+            mRightBottomPoint.y = (cc + width / 4 * sqrt3).toFloat()
             child.layout(cl, ct, cl + width, ct + height)
         }
     }
 
     fun setProgress(progress: Float) {
-        if (progress == 100f) {
+        if (progress == mSweeppedAngle / 360f) {
             mState = State.IDLE
         }
         mSweeppedAngle = progress * 360f
+        mState = State.UPDATING
         postInvalidate()
     }
 
     fun setOnStateChangeListener(listener: OnStateChangeListener) {
         mOnStateChangeListener = listener
+    }
+
+    fun setThemeColor(color: Int) {
+        mColor = color
+        mProgressPaint.color = resources.getColor(mColor)
     }
 
     enum class State {

@@ -15,7 +15,7 @@ data class Model(var music: Music = Music(),
                  var id: Int = Int.MIN_VALUE,
                  var cover: Uri = Uri.EMPTY,
                  var description:String = "",
-                 var motivation: Motivation = Motivation()) : Parcelable {
+                 var motivation: Motivation = Motivation()) : Parcelable{
     companion object {
         @JvmField val CREATOR: Parcelable.Creator<Model> = object : Parcelable.Creator<Model> {
             override fun createFromParcel(source: Parcel): Model = Model(source)

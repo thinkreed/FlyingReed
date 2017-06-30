@@ -12,8 +12,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 import reed.flyingreed.R
 import reed.flyingreed.algo.zigZag
 import reed.flyingreed.controller.fragment.ListFragment
+import reed.flyingreed.controller.fragment.MusicFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : FullScreenActivity() {
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
@@ -40,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         var fragment = supportFragmentManager.findFragmentById(R.id.container)
 
         if (fragment == null) {
-            fragment = ListFragment.instance
+            fragment = MusicFragment.getInstance()
             supportFragmentManager.beginTransaction().add(R.id.container, fragment).commit()
         }
     }
