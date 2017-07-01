@@ -7,3 +7,11 @@
 /build
 /captures
 .externalNativeBuild
+/keystore.properties
+dev/
+libs/
+official/
+qihu/
+src/androidTest/java/reed/flyingreed/MainActivityTest.kt
+wandoujia/
+xiaomi/

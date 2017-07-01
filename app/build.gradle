@@ -4,22 +4,73 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+// Create a variable called keystorePropertiesFile, and initialize it to your
+// keystore.properties file, in the rootProject folder.
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+
+// Initialize a new Properties() object called keystoreProperties.
+def keystoreProperties = new Properties()
+
+// Load your keystore.properties file into the keystoreProperties object.
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
     compileSdkVersion 25
     buildToolsVersion "26.0.0"
     defaultConfig {
         applicationId "reed.flyingreed"
-        minSdkVersion 15
+        minSdkVersion 18
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        vectorDrawables.useSupportLibrary= true
+        vectorDrawables.useSupportLibrary = true
+        setProperty("archivesBaseName", "flyingreed-$versionName")
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    flavorDimensions "reed"
+    productFlavors {
+        dev {
+            manifestPlaceholders = [channel: "dev"]
+            dimension "reed"
+        }
+//        official {
+//            manifestPlaceholders = [channel: "official"]
+//            dimension "reed"
+//        }
+//        wandoujia {
+//            manifestPlaceholders = [channel: "wandoujia"]
+//            dimension "reed"
+//        }
+//        xiaomi {
+//            manifestPlaceholders = [channel: "xiaomi"]
+//            dimension "reed"
+//        }
+//        qihu {
+//            manifestPlaceholders = [channel: "360"]
+//            dimension "reed"
+//        }
     }
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //混淆
+            minifyEnabled true
+            //zipAlign
+            zipAlignEnabled true
+            //shrink
+            shrinkResources true
+            //前一部分是系统默认的混淆配置，后一部分是自定义的
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            //签名
+            signingConfig signingConfigs.release
         }
     }
 }
@@ -35,15 +86,45 @@ dependencies {
     implementation 'com.android.support:design:25.4.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.android.support:support-vector-drawable:25.4.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    //recyclerview
     implementation 'com.android.support:recyclerview-v7:25.4.0'
+    //coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.16'
+    //okhttp3
     implementation 'com.squareup.okhttp3:okhttp:3.8.0'
+    //glide
     implementation 'com.github.bumptech.glide:glide:4.0.0-RC0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC0'
+    //retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    //ijkplayer
     implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.0'
     implementation 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.0'
+    //eventbus
     implementation 'org.greenrobot:eventbus:3.0.0'
+    //leakcanary
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.1'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+    testImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+    //bugly
+    implementation 'com.tencent.bugly:crashreport:latest.release'
+    //Espresso
+    implementation 'com.android.support:support-annotations:22.2.0'
+    // Android JUnit Runner
+    androidTestImplementation 'com.android.support.test:runner:0.5'
+    // JUnit4 Rules
+    androidTestImplementation 'com.android.support.test:rules:0.5'
+    // Espresso core
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:2.2.2'
+    // Espresso-contrib for DatePicker, RecyclerView, Drawer actions, Accessibility checks, CountingIdlingResource
+    androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:2.2.2'
+    // Espresso-web for WebView support
+    androidTestImplementation 'com.android.support.test.espresso:espresso-web:2.2.2'
+    // Espresso-idling-resource for synchronization with background jobs
+    androidTestImplementation 'com.android.support.test.espresso:espresso-idling-resource:2.2.2'
+    // Espresso-intents for validation and stubbing of Intents
+    androidTestImplementation 'com.android.support.test.espresso:espresso-intents:2.2.2'
+    // UiAutomator
+    androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
 }
