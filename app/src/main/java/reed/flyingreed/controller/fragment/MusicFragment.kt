@@ -108,6 +108,7 @@ class MusicFragment : Fragment(), View.OnClickListener {
         super.onResume()
         val service = mPlayerService
         if (service != null) {
+            resetAlpha()
             if (service.isPlaying) {
                 val view = when (Week.values()[service.favor]) {
                     Week.MONDAY -> {
@@ -150,6 +151,16 @@ class MusicFragment : Fragment(), View.OnClickListener {
 
     override fun onDestroy() {
         super.onDestroy()
+    }
+
+    private fun resetAlpha() {
+        monday.alpha = 1.0f
+        tuesday.alpha = 1.0f
+        wednesday.alpha = 1.0f
+        thursday.alpha = 1.0f
+        friday.alpha = 1.0f
+        saturday.alpha = 1.0f
+        sunday.alpha = 1.0f
     }
 
     inner class ShiningTask(var view: View) : Runnable {

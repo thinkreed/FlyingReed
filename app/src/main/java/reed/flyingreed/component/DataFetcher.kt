@@ -28,15 +28,15 @@ object DataFetcher {
         mutableListOf<Observer>()
     }
 
-    fun getData(uri: Uri) = launch(CommonPool) {
+    suspend fun getData(uri: Uri) {
         when (uri.scheme) {
             "http", "https" -> getHttpData(uri)
             "file" -> getFileData(uri)
             "content" -> getContentData(uri)
             else -> throw IllegalArgumentException("not supported scheme")
         }
-    }
 
+    }
 
     private suspend fun getHttpData(uri: Uri) {
         val client = OkHttpClient()

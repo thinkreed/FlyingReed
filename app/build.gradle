@@ -30,7 +30,7 @@ android {
         minSdkVersion 18
         targetSdkVersion 25
         versionCode 1
-        versionName "1.0"
+        versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", "flyingreed-$versionName")
@@ -38,14 +38,14 @@ android {
     }
     flavorDimensions "reed"
     productFlavors {
-        dev {
-            manifestPlaceholders = [channel: "dev"]
-            dimension "reed"
-        }
-//        official {
-//            manifestPlaceholders = [channel: "official"]
+//        dev {
+//            manifestPlaceholders = [channel: "dev"]
 //            dimension "reed"
 //        }
+        official {
+            manifestPlaceholders = [channel: "official"]
+            dimension "reed"
+        }
 //        wandoujia {
 //            manifestPlaceholders = [channel: "wandoujia"]
 //            dimension "reed"

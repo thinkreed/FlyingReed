@@ -13,6 +13,8 @@ import reed.flyingreed.component.DataFetcher
 import reed.flyingreed.controller.adapter.ListAdapter
 import reed.flyingreed.mvvm.viewmodels.SongsViewModel
 import kotlinx.android.synthetic.main.fragment_list.*
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.launch
 
 /**
  * Created by thinkreed on 2017/6/17.
@@ -34,7 +36,9 @@ class ListFragment : Fragment() {
         DataFetcher.registerObserver(songs)
         adapter.setViewModel(songs)
         list.adapter = adapter
-        DataFetcher.getData(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
+        launch(CommonPool) {
+            DataFetcher.getData(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
+        }
     }
 
     override fun onDestroyView() {

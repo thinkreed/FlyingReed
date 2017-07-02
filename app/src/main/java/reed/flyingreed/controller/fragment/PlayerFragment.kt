@@ -50,7 +50,11 @@ class PlayerFragment : Fragment(), PlayPauseProgress.OnStateChangeListener {
                 if (mPlayerService.favor != mFavor) {
                     mPlayerService.initWithFavor(mFavor)
                 } else {
-                    mHandler.post(UpdatingTask())
+                    title.text = mPlayerService.currentPlaying.title
+                    artist.text = mPlayerService.currentPlaying.description
+                    if (mPlayerService.isPlaying) {
+                        mHandler.post(UpdatingTask())
+                    }
                 }
             }
 

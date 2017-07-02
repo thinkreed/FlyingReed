@@ -20,4 +20,5 @@ interface IPlayerService {
     void initWithFavor(int favor);
     boolean isPlaying();
     int getFavor();
+    Model getCurrentPlaying();
 }

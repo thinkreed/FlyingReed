@@ -6,6 +6,9 @@ import android.media.AudioManager
 import android.os.IBinder
 import android.provider.MediaStore
 import android.util.Log
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.launch
 import org.greenrobot.eventbus.EventBus
 import reed.flyingreed.IPlayerService
 import reed.flyingreed.component.DataFetcher
@@ -32,6 +35,8 @@ class PlayerService : Service(), Observer {
 
     private lateinit var mData: MutableList<Model>
 
+    private var mJob :Job? = null
+
     private val mBinder = object : IPlayerService.Stub() {
 
         override fun pause() {
@@ -40,6 +45,7 @@ class PlayerService : Service(), Observer {
 
         override fun start() {
             mPlayer.start()
+            EventBus.getDefault().post(MusicChangeEvent(mData[mMusicIndex]))
         }
 
         override fun stop() {
@@ -52,7 +58,7 @@ class PlayerService : Service(), Observer {
         }
 
         override fun next() {
-            mMusicIndex = if (mMusicIndex == mMusicIndex - 1) 0 else mMusicIndex + 1
+            mMusicIndex = if (mMusicIndex == mData.size - 1) 0 else mMusicIndex + 1
             startPlayAtIndex(mMusicIndex)
         }
 
@@ -66,7 +72,9 @@ class PlayerService : Service(), Observer {
 
         override fun initWithFavor(favor: Int) {
             mFavor = favor
-            DataFetcher.getData(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
+            mJob = launch(CommonPool) {
+                DataFetcher.getData(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
+            }
         }
 
         override fun isPlaying(): Boolean {
@@ -77,6 +85,10 @@ class PlayerService : Service(), Observer {
             return mFavor
         }
 
+        override fun getCurrentPlaying(): Model {
+            return mData[mMusicIndex]
+        }
+
     }
 
 
@@ -84,8 +96,7 @@ class PlayerService : Service(), Observer {
         super.onCreate()
         mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
         mPlayer.setOnPreparedListener {
-            mPlayer.start()
-            EventBus.getDefault().post(MusicChangeEvent(mData[mMusicIndex]))
+            mBinder.start()
         }
         mPlayer.setOnCompletionListener {
             mBinder.next()
@@ -95,6 +106,11 @@ class PlayerService : Service(), Observer {
 
     override fun onBind(intent: Intent?): IBinder {
         return mBinder
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        mJob?.cancel()
+        return super.onUnbind(intent)
     }
 
     override fun onDestroy() {

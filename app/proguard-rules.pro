@@ -158,6 +158,11 @@
   public *;
 }
 
+#ijkplayer
+-keep class tv.danmaku.ijk.media.player.** {*;}
+-keep class tv.danmaku.ijk.media.player.IjkMediaPlayer{*;}
+-keep class tv.danmaku.ijk.media.player.ffmpeg.FFmpegApi{*;}
+
 
 ##---------------Begin: proguard configuration for Gson  ----------
 # Gson uses generic type information stored in a class file when working with fields. Proguard
