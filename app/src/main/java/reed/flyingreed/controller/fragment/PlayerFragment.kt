@@ -17,9 +17,12 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import reed.flyingreed.IPlayerService
+import reed.flyingreed.controller.activity.PlayerActivity
+import reed.flyingreed.controller.activity.ShareActivity
 import reed.flyingreed.controller.services.PlayerService
 import reed.flyingreed.model.Const
 import reed.flyingreed.model.Week
+import reed.flyingreed.mvvm.Events.FlingEvents
 import reed.flyingreed.mvvm.Events.MusicChangeEvent
 import reed.flyingreed.widget.PlayPauseProgress
 
@@ -34,6 +37,8 @@ class PlayerFragment : Fragment(), PlayPauseProgress.OnStateChangeListener {
         Handler()
     }
 
+    private var mFavor = 0
+
     private var mWidgetColor = 0
 
     private var mRoot: View? = null
@@ -42,6 +47,11 @@ class PlayerFragment : Fragment(), PlayPauseProgress.OnStateChangeListener {
         object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
                 mPlayerService = IPlayerService.Stub.asInterface(service)
+                if (mPlayerService.favor != mFavor) {
+                    mPlayerService.initWithFavor(mFavor)
+                } else {
+                    mHandler.post(UpdatingTask())
+                }
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {
@@ -61,9 +71,33 @@ class PlayerFragment : Fragment(), PlayPauseProgress.OnStateChangeListener {
         EventBus.getDefault().register(this)
         arguments?.let {
             mRoot = view
+            mFavor = arguments.getInt(Const.KEY_WEEK, Week.SUNDAY.ordinal)
             val intent = Intent(activity, PlayerService::class.java)
             activity.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE)
-            mWidgetColor = arguments.getInt(Const.KEY_WEEK_COLOR, Week.SUNDAY.ordinal)
+            when (Week.values()[mFavor]) {
+                Week.MONDAY -> {
+                    mWidgetColor = R.color.colorRed
+                }
+                Week.TUESDAY -> {
+                    mWidgetColor = R.color.colorOrange
+                }
+                Week.WEDNESDAY -> {
+                    mWidgetColor = R.color.colorYellow
+                }
+                Week.THURSDAY -> {
+                    mWidgetColor = R.color.colorSpringGreen
+                }
+                Week.FRIDAY -> {
+                    mWidgetColor = R.color.colorLightSkyBlue
+                }
+                Week.SATURDAY -> {
+                    mWidgetColor = R.color.colorCyan
+                }
+                Week.SUNDAY -> {
+                    mWidgetColor = R.color.colorMediumPurple
+                }
+                else -> IllegalArgumentException("not a weekday")
+            }
             progress.setOnStateChangeListener(this)
             progress.setThemeColor(mWidgetColor)
             title.setTextColor(resources.getColor(mWidgetColor))
@@ -71,11 +105,14 @@ class PlayerFragment : Fragment(), PlayPauseProgress.OnStateChangeListener {
         }
     }
 
+    override fun onStop() {
+        mHandler.removeCallbacksAndMessages(null)
+        super.onStop()
+    }
+
     override fun onDetach() {
         EventBus.getDefault().unregister(this)
         activity.unbindService(mServiceConnection)
-        mHandler.removeCallbacksAndMessages(null)
-        mPlayerService.stop()
         super.onDetach()
     }
 
@@ -105,6 +142,26 @@ class PlayerFragment : Fragment(), PlayPauseProgress.OnStateChangeListener {
         artist.text = event.model.description
         mHandler.removeCallbacksAndMessages(null)
         mHandler.post(UpdatingTask())
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onFlingEvent(event: FlingEvents) {
+        if (event.target == PlayerActivity::class) {
+
+            when (event.direction) {
+                FlingEvents.LEFT -> {
+                    mPlayerService.next()
+                }
+                FlingEvents.RIGHT -> {
+                    mPlayerService.prev()
+                }
+                FlingEvents.UP -> {
+                    val intent = Intent(activity, ShareActivity::class.java)
+                    startActivity(intent)
+                }
+            }
+        }
+
     }
 
     companion object {

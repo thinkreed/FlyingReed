@@ -12,7 +12,7 @@ import reed.flyingreed.controller.fragment.ListFragment
  * Created by thinkreed on 2017/6/17.
  */
 
-abstract class FragmentActivity : FullScreenActivity() {
+abstract class FragmentActivity : AppCompatActivity() {
 
     abstract fun getFragment(): Fragment
 

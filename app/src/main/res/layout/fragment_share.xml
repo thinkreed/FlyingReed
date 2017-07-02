@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/wechat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/friend"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/wechat_icon" />
+
+    <ImageView
+        android:id="@+id/friend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/qq"
+        app:layout_constraintLeft_toLeftOf="@id/wechat"
+        app:layout_constraintTop_toBottomOf="@id/wechat"
+        app:srcCompat="@drawable/friends_icon" />
+
+    <ImageView
+        android:id="@+id/qq"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/weibo"
+        app:layout_constraintLeft_toLeftOf="@id/wechat"
+        app:layout_constraintTop_toBottomOf="@id/friend"
+        app:srcCompat="@drawable/qq_icon" />
+
+    <ImageView
+        android:id="@+id/weibo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@id/wechat"
+        app:layout_constraintTop_toBottomOf="@id/qq"
+        app:srcCompat="@drawable/weibo_icon" />
+
+</android.support.constraint.ConstraintLayout>

@@ -161,6 +161,11 @@ class PlayPauseProgress(context: Context, attrs: AttributeSet) : FrameLayout(con
         }
     }
 
+    override fun onDetachedFromWindow() {
+        mState = State.IDLE
+        super.onDetachedFromWindow()
+    }
+
     fun setProgress(progress: Float) {
         if (progress == mSweeppedAngle / 360f) {
             mState = State.IDLE

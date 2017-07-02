@@ -17,4 +17,7 @@ interface IPlayerService {
     void stop();
     long getCurrentPosition();
     long getDuration();
+    void initWithFavor(int favor);
+    boolean isPlaying();
+    int getFavor();
 }

@@ -1,20 +1,29 @@
 package reed.flyingreed.controller.activity
 
 import android.Manifest
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
+import reed.flyingreed.IPlayerService
 import reed.flyingreed.R
 import reed.flyingreed.algo.zigZag
 import reed.flyingreed.controller.fragment.ListFragment
 import reed.flyingreed.controller.fragment.MusicFragment
+import reed.flyingreed.controller.services.PlayerService
 
-class MainActivity : FullScreenActivity() {
+class MainActivity : AppCompatActivity() {
+
+
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
@@ -54,5 +63,9 @@ class MainActivity : FullScreenActivity() {
                         Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_NETWORK_STATE), 0)
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 }

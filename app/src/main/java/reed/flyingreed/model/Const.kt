@@ -7,6 +7,6 @@ package reed.flyingreed.model
 class Const {
     companion object {
         val KEY_MOOD = "key_mood"
-        val KEY_WEEK_COLOR = "key_week_color"
+        val KEY_WEEK = "key_week"
     }
 }

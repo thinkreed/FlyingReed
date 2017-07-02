@@ -5,10 +5,12 @@ import android.content.Intent
 import android.media.AudioManager
 import android.os.IBinder
 import android.provider.MediaStore
+import android.util.Log
 import org.greenrobot.eventbus.EventBus
 import reed.flyingreed.IPlayerService
 import reed.flyingreed.component.DataFetcher
 import reed.flyingreed.component.Observer
+import reed.flyingreed.model.Const
 import reed.flyingreed.model.Model
 import reed.flyingreed.mvvm.Events.MusicChangeEvent
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
@@ -23,6 +25,8 @@ class PlayerService : Service(), Observer {
     private val mPlayer by lazy {
         IjkMediaPlayer()
     }
+
+    private var mFavor = -1
 
     private var mMusicIndex = 0
 
@@ -60,16 +64,25 @@ class PlayerService : Service(), Observer {
             return mPlayer.duration
         }
 
+        override fun initWithFavor(favor: Int) {
+            mFavor = favor
+            DataFetcher.getData(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
+        }
+
+        override fun isPlaying(): Boolean {
+            return mPlayer.isPlaying
+        }
+
+        override fun getFavor(): Int {
+            return mFavor
+        }
+
     }
 
 
     override fun onCreate() {
         super.onCreate()
         mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
-        DataFetcher.registerObserver(this)
-    }
-
-    override fun onBind(intent: Intent?): IBinder {
         mPlayer.setOnPreparedListener {
             mPlayer.start()
             EventBus.getDefault().post(MusicChangeEvent(mData[mMusicIndex]))
@@ -77,23 +90,29 @@ class PlayerService : Service(), Observer {
         mPlayer.setOnCompletionListener {
             mBinder.next()
         }
-        DataFetcher.getData(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
+        DataFetcher.registerObserver(this)
+    }
+
+    override fun onBind(intent: Intent?): IBinder {
         return mBinder
     }
 
     override fun onDestroy() {
         DataFetcher.unregisterObserver(this)
+        mPlayer.stop()
+        mPlayer.release()
         super.onDestroy()
     }
 
     override fun onDataArrived(models: MutableList<Model>) {
         mData = models
         if (mData.isNotEmpty()) {
-            startPlayAtIndex(0)
+            startPlayAtIndex(mFavor * 3 % mData.size)
         }
     }
 
     private fun startPlayAtIndex(index: Int) {
+        mMusicIndex = index
         val model = mData[index]
         mPlayer.stop()
         mPlayer.reset()
