@@ -5,6 +5,10 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.umeng.socialize.ShareAction
+import com.umeng.socialize.UMShareListener
+import com.umeng.socialize.bean.SHARE_MEDIA
+import com.umeng.socialize.media.UMImage
 import kotlinx.android.synthetic.main.fragment_share.*
 import reed.flyingreed.R
 
@@ -38,7 +42,24 @@ class ShareFragment : Fragment(), View.OnClickListener {
 
                 }
                 R.id.qq -> {
+                    ShareAction(activity).setPlatform(SHARE_MEDIA.QQ)
+                            .withText("from flyingreed")
+                            .withMedia(UMImage(activity, R.mipmap.ic_launcher_round))
+                            .setCallback(object : UMShareListener {
+                                override fun onStart(p0: SHARE_MEDIA?) {
+                                }
 
+                                override fun onResult(p0: SHARE_MEDIA?) {
+                                    activity.onBackPressed()
+                                }
+
+                                override fun onError(p0: SHARE_MEDIA?, p1: Throwable?) {
+                                }
+
+                                override fun onCancel(p0: SHARE_MEDIA?) {
+                                }
+                            })
+                            .share()
                 }
                 R.id.weibo -> {
 

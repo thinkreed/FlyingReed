@@ -1,15 +1,11 @@
 package reed.flyingreed;
 
 import android.app.Application
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
-import android.os.IBinder
 import com.squareup.leakcanary.LeakCanary
-import com.tencent.bugly.Bugly
 import com.tencent.bugly.crashreport.CrashReport
-import reed.flyingreed.controller.services.PlayerService
+import com.umeng.socialize.Config
+import com.umeng.socialize.PlatformConfig
+import com.umeng.socialize.UMShareAPI
 
 /**
  * Created by thinkreed on 2017/6/18.
@@ -27,6 +23,9 @@ class KotlinApplication : Application() {
         }
         LeakCanary.install(this)
         CrashReport.initCrashReport(this, "1236da7bfe", false)
+        Config.DEBUG = true
+        PlatformConfig.setQQZone("1106185635", "5f8Hpw2HCTbupIT7")
+        UMShareAPI.get(this)
     }
 
 
