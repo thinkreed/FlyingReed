@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +26,7 @@ import reed.flyingreed.model.Week
 class MusicFragment : Fragment(), View.OnClickListener {
 
     private var mPlayerService: IPlayerService? = null
+    private var mBlinkingView:View? = null
 
     private val mHandler by lazy {
         Handler()
@@ -108,7 +108,6 @@ class MusicFragment : Fragment(), View.OnClickListener {
         super.onResume()
         val service = mPlayerService
         if (service != null) {
-            resetAlpha()
             if (service.isPlaying) {
                 val view = when (Week.values()[service.favor]) {
                     Week.MONDAY -> {
@@ -133,6 +132,7 @@ class MusicFragment : Fragment(), View.OnClickListener {
                         sunday
                     }
                 }
+                mBlinkingView = view
                 mHandler.post(ShiningTask(view))
             }
         }
@@ -140,6 +140,8 @@ class MusicFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onStop() {
+        //reset the blinking view
+        mBlinkingView?.animate()?.alpha(1.0f)?.duration = 0
         mHandler.removeCallbacksAndMessages(null)
         super.onStop()
     }
@@ -153,21 +155,11 @@ class MusicFragment : Fragment(), View.OnClickListener {
         super.onDestroy()
     }
 
-    private fun resetAlpha() {
-        monday.alpha = 1.0f
-        tuesday.alpha = 1.0f
-        wednesday.alpha = 1.0f
-        thursday.alpha = 1.0f
-        friday.alpha = 1.0f
-        saturday.alpha = 1.0f
-        sunday.alpha = 1.0f
-    }
-
     inner class ShiningTask(var view: View) : Runnable {
         override fun run() {
             val alpha = if (view.alpha == 0f) 1f else 0f
             view.animate().alpha(alpha).duration = 1000
-            //设置时间比duration稍长使得新的alpha不会cancel上一个animation
+            //set the delay time a little longer than duration to ensure animation ended
             mHandler.postDelayed(this, 1100)
         }
     }

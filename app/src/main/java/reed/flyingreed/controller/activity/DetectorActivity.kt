@@ -24,7 +24,8 @@ abstract class DetectorActivity : FragmentActivity() {
                 return true
             }
 
-            override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
+            override fun onFling(e1: MotionEvent?, e2: MotionEvent?,
+                                 velocityX: Float, velocityY: Float): Boolean {
                 val dx = MotionEventCompat.getAxisValue(e1, MotionEvent.AXIS_X) -
                         MotionEventCompat.getAxisValue(e2, MotionEvent.AXIS_X)
                 val dy = MotionEventCompat.getAxisValue(e1, MotionEvent.AXIS_Y) -
