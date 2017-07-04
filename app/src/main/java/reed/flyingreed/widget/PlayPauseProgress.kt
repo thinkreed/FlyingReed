@@ -78,6 +78,7 @@ class PlayPauseProgress(context: Context, attrs: AttributeSet) : FrameLayout(con
             }
             //获取xml中定义的属性
             val a = context.theme.obtainStyledAttributes(attrs, R.styleable.PlayPauseProgress, 0, 0)
+            //获取进度条宽度
             mStrokeWidth = a.getDimension(R.styleable.PlayPauseProgress_stroke_width, 0f)
             mProgressPaint.color = resources.getColor(android.R.color.transparent)
             mProgressPaint.strokeWidth = mStrokeWidth

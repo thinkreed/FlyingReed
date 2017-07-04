@@ -5,5 +5,5 @@ package reed.flyingreed.model
  */
 
 enum class Template {
-    EMPTY, ITEM_MUSIC_INFO
+    EMPTY, ITEM_VIDEO
 }

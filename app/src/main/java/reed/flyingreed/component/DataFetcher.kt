@@ -3,10 +3,10 @@ package reed.flyingreed.component
 import android.content.ContentUris
 import android.database.Cursor
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -26,6 +26,10 @@ object DataFetcher {
 
     private val observers by lazy {
         mutableListOf<Observer>()
+    }
+
+    private val mMainHandler by lazy {
+        Handler(Looper.getMainLooper())
     }
 
     suspend fun getData(uri: Uri) {
@@ -62,22 +66,25 @@ object DataFetcher {
                             path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)),
                             id = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media._ID)),
                             artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)),
-                            cover = ContentUris.withAppendedId(albumUri, cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID))))
+                            cover = ContentUris.withAppendedId(albumUri,
+                                    cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID))))
                     models.add(Model(music = song,
                             cover = song.cover,
                             title = song.title,
                             id = song.id,
-                            template = Template.ITEM_MUSIC_INFO,
+                            template = Template.ITEM_VIDEO,
                             description = song.artist,
                             motivation = Motivation(PlayerActivity::class.java)))
                 }
             }
             cursor.close()
-            notifyDataArrived(models)
+            mMainHandler.post {
+                notifyDataArrived(models)
+            }
         }
     }
 
-    private suspend fun notifyDataArrived(models: MutableList<Model>) =
+    private fun notifyDataArrived(models: MutableList<Model>) =
             observers.map { observer -> observer.onDataArrived(models) }
 
     fun registerObserver(observer: Observer) = observers.add(observer)

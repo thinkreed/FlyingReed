@@ -46,5 +46,9 @@ abstract class ViewModel : Observer {
         data.clear()
     }
 
+    fun getDatas() :MutableList<Model> {
+        return data
+    }
+
     abstract fun notifyObserver(): Unit
 }

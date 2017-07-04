@@ -5,9 +5,13 @@ import android.provider.MediaStore
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.ListPreloader
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
 import reed.flyingreed.R
 import reed.flyingreed.component.DataFetcher
 import reed.flyingreed.controller.adapter.ListAdapter
@@ -15,6 +19,7 @@ import reed.flyingreed.mvvm.viewmodels.SongsViewModel
 import kotlinx.android.synthetic.main.fragment_list.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
+import reed.flyingreed.model.Model
 
 /**
  * Created by thinkreed on 2017/6/17.
@@ -30,7 +35,8 @@ class ListFragment : Fragment() {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        list.layoutManager = LinearLayoutManager(activity)
+        val layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        list.layoutManager = layoutManager
         val adapter = ListAdapter()
         songs = SongsViewModel(adapter)
         DataFetcher.registerObserver(songs)

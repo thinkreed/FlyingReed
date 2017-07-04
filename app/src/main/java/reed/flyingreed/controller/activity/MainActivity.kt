@@ -11,25 +11,16 @@ import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
 import reed.flyingreed.R
 import reed.flyingreed.algo.zigZag
+import reed.flyingreed.controller.fragment.ListFragment
+import reed.flyingreed.controller.fragment.LiveFragment
 import reed.flyingreed.controller.fragment.MusicFragment
 
 class MainActivity : AppCompatActivity() {
 
 
-
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
-        when (item.itemId) {
-            R.id.navigation_home -> {
-                return@OnNavigationItemSelectedListener true
-            }
-            R.id.navigation_discover -> {
-                return@OnNavigationItemSelectedListener true
-            }
-            R.id.navigation_user_center -> {
-                return@OnNavigationItemSelectedListener true
-            }
-        }
-        false
+        changeFragment(item.itemId)
+        true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +47,23 @@ class MainActivity : AppCompatActivity() {
                         Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_NETWORK_STATE), 0)
             }
         }
+    }
+
+    private fun changeFragment(itemId: Int) {
+
+        val fragment = when (itemId) {
+            R.id.navigation_home -> {
+                MusicFragment.getInstance()
+            }
+            R.id.navigation_discover -> {
+                ListFragment.instance
+            }
+            R.id.navigation_user_center -> {
+                LiveFragment.getInstance()
+            }
+            else -> throw IllegalArgumentException("not support page")
+        }
+        supportFragmentManager.beginTransaction().replace(R.id.container, fragment).commit()
     }
 
     override fun onDestroy() {
