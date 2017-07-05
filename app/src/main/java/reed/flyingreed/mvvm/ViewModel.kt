@@ -1,54 +1,63 @@
 package reed.flyingreed.mvvm
 
-import reed.flyingreed.component.Observer
-import reed.flyingreed.model.Model
-
+import android.util.SparseArray
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 
 /**
  * Created by thinkreed on 2017/6/19.
  */
 
-abstract class ViewModel : Observer {
+abstract class ViewModel<T>(parent: ViewGroup?, layout: Int) {
 
-    private val data by lazy { mutableListOf<Model>() }
-
-    override fun onDataArrived(models: MutableList<Model>) {
-        data.clear()
-        data.addAll(models)
-        notifyObserver()
+    val rootView: View by lazy {
+        LayoutInflater.from(parent?.context).inflate(layout, parent, false)
     }
 
-    fun dataCount(): Int {
-        return data.size
+    private val children by lazy {
+        SparseArray<ViewManager<T>>()
     }
 
-    fun remove(index: Int) {
-        data.removeAt(index)
+    fun bind(model: T) {
+
+        for (i in 0 until children.size()) {
+            findChild(i).bind(model, this)
+        }
+
     }
 
-    fun remove(model: Model) {
-        data.remove(model)
+    fun findChild(index: Int): ViewManager<T> {
+
+        val viewId = children.keyAt(index)
+
+        val childView = if (viewId == 0) rootView else {
+            rootView.findViewById(viewId)
+        }
+
+        val child = children.valueAt(index)
+        child.view = childView
+        child.id = viewId
+
+        return child
+
     }
 
-    fun add(index: Int, model: Model) {
-        data.add(index, model)
+    fun add(id: Int, viewManager: ViewManager<T>): ViewModel<T> {
+        children.put(id, viewManager)
+        return this
     }
 
-    fun add(model: Model) {
-        data.add(model)
+    fun remove(id: Int) {
+        children.remove(id)
     }
 
-    fun get(index: Int): Model {
-        return data[index]
+    fun start() {
+
     }
 
-    fun clear() {
-        data.clear()
+    fun stop() {
+
     }
 
-    fun getDatas() :MutableList<Model> {
-        return data
-    }
-
-    abstract fun notifyObserver(): Unit
 }

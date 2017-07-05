@@ -5,7 +5,7 @@ import android.os.Parcel
 import android.os.Parcelable
 
 /**
- * Created by thinkreed on 2017/6/17.a
+ * Created by thinkreed on 2017/6/17
  */
 
 data class Model(var music: Music = Music(),

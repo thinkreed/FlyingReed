@@ -7,14 +7,15 @@ import com.bumptech.glide.request.RequestOptions
 import reed.flyingreed.R
 import reed.flyingreed.model.Model
 import reed.flyingreed.mvvm.ViewManager
+import reed.flyingreed.mvvm.ViewModel
 
 /**
  * Created by thinkreed on 2017/6/17.
  */
 
-class BaseViewManager : ViewManager() {
+class BaseViewManager : ViewManager<Model>() {
 
-    override fun bind(model: Model) {
+    override fun bind(model: Model, viewModel: ViewModel<Model>) {
 
         when (id) {
 
