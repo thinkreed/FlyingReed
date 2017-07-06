@@ -44,7 +44,7 @@ class ShareFragment : Fragment(), View.OnClickListener {
                 R.id.qq -> {
                     ShareAction(activity).setPlatform(SHARE_MEDIA.QQ)
                             .withText("from flyingreed")
-                            .withMedia(UMImage(activity, R.mipmap.ic_launcher_round))
+                            .withMedia(UMImage(activity, R.mipmap.ic_launcher))
                             .setCallback(object : UMShareListener {
                                 override fun onStart(p0: SHARE_MEDIA?) {
                                 }

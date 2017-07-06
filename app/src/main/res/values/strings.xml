@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">FlyingReed</string>
-    <string name="title_home">Home</string>
-    <string name="title_discover">Discover</string>
-    <string name="title_user_center">User Center</string>
+    <string name="title_home">music</string>
+    <string name="title_discover">video</string>
+    <string name="title_user_center">live</string>
     <string name="monday">1</string>
     <string name="tuesday">2</string>
     <string name="wednesday">3</string>

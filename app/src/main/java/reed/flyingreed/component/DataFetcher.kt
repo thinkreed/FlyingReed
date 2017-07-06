@@ -7,15 +7,14 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import reed.flyingreed.KotlinApplication
 import reed.flyingreed.controller.activity.PlayerActivity
-import reed.flyingreed.model.Model
-import reed.flyingreed.model.Motivation
-import reed.flyingreed.model.Music
-import reed.flyingreed.model.Template
+import reed.flyingreed.model.*
 
 
 /**
@@ -46,11 +45,13 @@ object DataFetcher {
         val client = OkHttpClient()
         val request = Request.Builder().url(uri.toString()).build()
         val response: Response? = client.newCall(request).execute()
-        Log.d("thinkreed", response?.body()?.string())
+//        val videos = JsonParser().parse(response?.body()?.string())
+//                .asJsonObject.getAsJsonArray("videos")
         response?.close()
     }
 
     private suspend fun getFileData(uri: Uri): Unit {
+
     }
 
     private suspend fun getContentData(uri: Uri): Unit {

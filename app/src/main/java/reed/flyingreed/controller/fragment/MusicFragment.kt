@@ -56,8 +56,6 @@ class MusicFragment : Fragment(), View.OnClickListener {
             wednesday.setOnClickListener(this)
             thursday.setOnClickListener(this)
             friday.setOnClickListener(this)
-            saturday.setOnClickListener(this)
-            sunday.setOnClickListener(this)
             val intent = Intent(activity, PlayerService::class.java)
             activity.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE)
         }
@@ -84,14 +82,6 @@ class MusicFragment : Fragment(), View.OnClickListener {
                 }
                 R.id.friday -> {
                     week = Week.FRIDAY.ordinal
-
-                }
-                R.id.saturday -> {
-                    week = Week.SATURDAY.ordinal
-
-                }
-                R.id.sunday -> {
-                    week = Week.SUNDAY.ordinal
 
                 }
                 else -> IllegalArgumentException("not a weekday")
@@ -124,12 +114,6 @@ class MusicFragment : Fragment(), View.OnClickListener {
                     }
                     Week.FRIDAY -> {
                         friday
-                    }
-                    Week.SATURDAY -> {
-                        saturday
-                    }
-                    else -> {
-                        sunday
                     }
                 }
                 mBlinkingView = view

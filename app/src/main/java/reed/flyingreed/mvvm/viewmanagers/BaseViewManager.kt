@@ -7,7 +7,6 @@ import com.bumptech.glide.request.RequestOptions
 import reed.flyingreed.R
 import reed.flyingreed.model.Model
 import reed.flyingreed.mvvm.ViewManager
-import reed.flyingreed.mvvm.ViewModel
 
 /**
  * Created by thinkreed on 2017/6/17.
@@ -15,31 +14,39 @@ import reed.flyingreed.mvvm.ViewModel
 
 class BaseViewManager : ViewManager<Model>() {
 
-    override fun bind(model: Model, viewModel: ViewModel<Model>) {
+    override fun bind(old: Model, new: Model) {
 
         when (id) {
 
             R.id.artist -> {
-                val tv = view as TextView
-                tv.text = model.description
+                if (old.description != new.description) {
+                    val tv = view as TextView
+                    tv.text = new.description
+                }
             }
 
             R.id.title -> {
-                val tv = view as TextView
-                tv.text = model.title
+                if (old.title != new.title) {
+                    val tv = view as TextView
+                    tv.text = new.title
+                }
             }
 
             R.id.cover -> {
-                val img = view as ImageView
-                Glide.with(view).load(model.cover)
-                        .apply(RequestOptions().placeholder(R.drawable.ys))
-                        .into(img)
+                if (old.cover != new.cover) {
+                    val img = view as ImageView
+                    Glide.with(view).load(new.cover)
+                            .apply(RequestOptions().placeholder(R.drawable.ys))
+                            .into(img)
+                }
             }
 
             R.id.avatar -> {
-                val img = view as ImageView
-                Glide.with(view).load(model.cover)
-                        .apply(RequestOptions.circleCropTransform()).into(img)
+                if (old.cover != new.cover) {
+                    val img = view as ImageView
+                    Glide.with(view).load(new.cover)
+                            .apply(RequestOptions.circleCropTransform()).into(img)
+                }
             }
 
             else -> throw IllegalArgumentException("not supported type")

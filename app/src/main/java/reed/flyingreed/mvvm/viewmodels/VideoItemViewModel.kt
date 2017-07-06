@@ -8,6 +8,5 @@ import reed.flyingreed.mvvm.ViewModel
  * Created by thinkreed on 2017/6/19.
  */
 
-class VideoItemViewModel(parent: ViewGroup?, layout: Int):ViewModel<Model>(parent, layout) {
-
-}
+class VideoItemViewModel(parent: ViewGroup?, layout: Int, model: Model)
+    : ViewModel<Model>(parent, layout, model)

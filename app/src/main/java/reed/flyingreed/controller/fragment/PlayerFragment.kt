@@ -75,7 +75,7 @@ class PlayerFragment : Fragment(), PlayPauseProgress.OnStateChangeListener {
         EventBus.getDefault().register(this)
         arguments?.let {
             mRoot = view
-            mFavor = arguments.getInt(Const.KEY_WEEK, Week.SUNDAY.ordinal)
+            mFavor = arguments.getInt(Const.KEY_WEEK, Week.FRIDAY.ordinal)
             val intent = Intent(activity, PlayerService::class.java)
             activity.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE)
             when (Week.values()[mFavor]) {
@@ -94,13 +94,6 @@ class PlayerFragment : Fragment(), PlayPauseProgress.OnStateChangeListener {
                 Week.FRIDAY -> {
                     mWidgetColor = R.color.colorLightSkyBlue
                 }
-                Week.SATURDAY -> {
-                    mWidgetColor = R.color.colorCyan
-                }
-                Week.SUNDAY -> {
-                    mWidgetColor = R.color.colorMediumPurple
-                }
-                else -> IllegalArgumentException("not a weekday")
             }
             progress.setOnStateChangeListener(this)
             progress.setThemeColor(mWidgetColor)

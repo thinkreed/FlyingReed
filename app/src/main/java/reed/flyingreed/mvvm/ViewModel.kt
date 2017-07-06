@@ -4,12 +4,13 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import kotlin.properties.Delegates
 
 /**
  * Created by thinkreed on 2017/6/19.
  */
 
-abstract class ViewModel<T>(parent: ViewGroup?, layout: Int) {
+abstract class ViewModel<T>(parent: ViewGroup?, layout: Int, defaultValue: T) {
 
     val rootView: View by lazy {
         LayoutInflater.from(parent?.context).inflate(layout, parent, false)
@@ -19,10 +20,15 @@ abstract class ViewModel<T>(parent: ViewGroup?, layout: Int) {
         SparseArray<ViewManager<T>>()
     }
 
-    fun bind(model: T) {
+    var model: T by Delegates.observable(defaultValue) {
+        prop, old, new ->
+        bind(old, new)
+    }
+
+    fun bind(old: T, new: T) {
 
         for (i in 0 until children.size()) {
-            findChild(i).bind(model, this)
+            findChild(i).bind(old, new)
         }
 
     }
@@ -30,14 +36,14 @@ abstract class ViewModel<T>(parent: ViewGroup?, layout: Int) {
     fun findChild(index: Int): ViewManager<T> {
 
         val viewId = children.keyAt(index)
-
-        val childView = if (viewId == 0) rootView else {
-            rootView.findViewById(viewId)
-        }
-
         val child = children.valueAt(index)
-        child.view = childView
-        child.id = viewId
+
+        if (child.view == null) {
+            child.view = if (viewId == 0) rootView else {
+                rootView.findViewById(viewId)
+            }
+            child.id = viewId
+        }
 
         return child
 
@@ -59,5 +65,4 @@ abstract class ViewModel<T>(parent: ViewGroup?, layout: Int) {
     fun stop() {
 
     }
-
 }

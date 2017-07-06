@@ -5,5 +5,5 @@ package reed.flyingreed.model
  */
 
 enum class Week {
-    MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
+    MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY
 }

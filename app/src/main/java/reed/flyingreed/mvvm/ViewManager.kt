@@ -9,6 +9,6 @@ import reed.flyingreed.model.Model
 
 abstract class ViewManager<T>(var id: Int = Int.MIN_VALUE, var view: View? = null) {
 
-    abstract fun bind(model: T, viewModel: ViewModel<T>)
+    abstract fun bind(old: T, new:T)
 
 }
