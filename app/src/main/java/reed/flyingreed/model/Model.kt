@@ -9,12 +9,13 @@ import android.os.Parcelable
  */
 
 data class Model(var music: Music = Music(),
+                 var video: Video = Video(),
                  var user: User = User(),
                  var template: Template = Template.EMPTY,
                  var title: String = "",
                  var id: Int = Int.MIN_VALUE,
                  var cover: Uri = Uri.EMPTY,
-                 var description:String = "",
+                 var description: String = "",
                  var motivation: Motivation = Motivation()) : Parcelable{
     companion object {
         @JvmField val CREATOR: Parcelable.Creator<Model> = object : Parcelable.Creator<Model> {
@@ -25,6 +26,7 @@ data class Model(var music: Music = Music(),
 
     constructor(source: Parcel) : this(
     source.readParcelable<Music>(Music::class.java.classLoader),
+    source.readParcelable<Video>(Video::class.java.classLoader),
     source.readParcelable<User>(User::class.java.classLoader),
     Template.values()[source.readInt()],
     source.readString(),
@@ -38,6 +40,7 @@ data class Model(var music: Music = Music(),
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeParcelable(music, 0)
+        dest.writeParcelable(video, 0)
         dest.writeParcelable(user, 0)
         dest.writeInt(template.ordinal)
         dest.writeString(title)

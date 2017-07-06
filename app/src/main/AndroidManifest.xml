@@ -36,13 +36,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".controller.activity.PlayerActivity"
+            android:name=".controller.activity.MusicPlayerActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
 
         <service android:name=".controller.services.PlayerService" />
         <activity
             android:name=".controller.activity.ShareActivity"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait" />
         <activity
             android:name=".WBShareActivity"

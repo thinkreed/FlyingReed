@@ -14,7 +14,7 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_music.*
 import reed.flyingreed.IPlayerService
 import reed.flyingreed.R
-import reed.flyingreed.controller.activity.PlayerActivity
+import reed.flyingreed.controller.activity.MusicPlayerActivity
 import reed.flyingreed.controller.services.PlayerService
 import reed.flyingreed.model.Const
 import reed.flyingreed.model.Week
@@ -86,7 +86,7 @@ class MusicFragment : Fragment(), View.OnClickListener {
                 }
                 else -> IllegalArgumentException("not a weekday")
             }
-            val intent = Intent(this.context, PlayerActivity::class.java)
+            val intent = Intent(this.context, MusicPlayerActivity::class.java)
             val bundle = Bundle()
             bundle.putInt(Const.KEY_WEEK, week)
             intent.putExtras(bundle)

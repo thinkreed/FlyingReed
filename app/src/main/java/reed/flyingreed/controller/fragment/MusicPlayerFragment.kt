@@ -17,20 +17,20 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import reed.flyingreed.IPlayerService
-import reed.flyingreed.controller.activity.PlayerActivity
+import reed.flyingreed.controller.activity.MusicPlayerActivity
 import reed.flyingreed.controller.activity.ShareActivity
 import reed.flyingreed.controller.services.PlayerService
 import reed.flyingreed.model.Const
 import reed.flyingreed.model.Week
 import reed.flyingreed.mvvm.Events.FlingEvents
-import reed.flyingreed.mvvm.Events.MusicChangeEvent
+import reed.flyingreed.mvvm.Events.MediaChangeEvent
 import reed.flyingreed.widget.PlayPauseProgress
 
 /**
  * Created by thinkreed on 2017/6/28.
  */
 
-class PlayerFragment : Fragment(), PlayPauseProgress.OnStateChangeListener {
+class MusicPlayerFragment : Fragment(), PlayPauseProgress.OnStateChangeListener {
 
 
     private val mHandler by lazy {
@@ -67,7 +67,7 @@ class PlayerFragment : Fragment(), PlayPauseProgress.OnStateChangeListener {
     private lateinit var mPlayerService: IPlayerService
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater?.inflate(R.layout.fragment_player, container, false)
+        return inflater?.inflate(R.layout.fragment_music_player, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
@@ -134,7 +134,7 @@ class PlayerFragment : Fragment(), PlayPauseProgress.OnStateChangeListener {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMusicChangeEvent(event: MusicChangeEvent) {
+    fun onMusicChangeEvent(event: MediaChangeEvent) {
         title.text = event.model.title
         artist.text = event.model.description
         mHandler.removeCallbacksAndMessages(null)
@@ -143,7 +143,7 @@ class PlayerFragment : Fragment(), PlayPauseProgress.OnStateChangeListener {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onFlingEvent(event: FlingEvents) {
-        if (event.target == PlayerActivity::class) {
+        if (event.target == MusicPlayerActivity::class) {
 
             when (event.direction) {
                 FlingEvents.LEFT -> {
@@ -163,7 +163,7 @@ class PlayerFragment : Fragment(), PlayPauseProgress.OnStateChangeListener {
 
     companion object {
         fun getInstance(bundle: Bundle): Fragment {
-            val fragment = PlayerFragment()
+            val fragment = MusicPlayerFragment()
             fragment.arguments = bundle
             return fragment
         }

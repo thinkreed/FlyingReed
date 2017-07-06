@@ -8,7 +8,11 @@ import android.os.Parcelable
  * Created by thinkreed on 2017/7/5.
  */
 
-data class Video(val id: Int = 0, val title: String = "", val uri: String = "") : Parcelable {
+data class Video(val title: String = "",
+                 val path: String = "",
+                 val cover: Uri = Uri.EMPTY,
+                 val id: Int = Int.MIN_VALUE,
+                 val artist: String = "") : Parcelable {
     companion object {
         @JvmField val CREATOR: Parcelable.Creator<Video> = object : Parcelable.Creator<Video> {
             override fun createFromParcel(source: Parcel): Video = Video(source)
@@ -17,16 +21,20 @@ data class Video(val id: Int = 0, val title: String = "", val uri: String = "") 
     }
 
     constructor(source: Parcel) : this(
-    source.readInt(),
     source.readString(),
+    source.readString(),
+    source.readParcelable<Uri>(Uri::class.java.classLoader),
+    source.readInt(),
     source.readString()
     )
 
     override fun describeContents() = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeInt(id)
         dest.writeString(title)
-        dest.writeString(uri)
+        dest.writeString(path)
+        dest.writeParcelable(cover, 0)
+        dest.writeInt(id)
+        dest.writeString(artist)
     }
 }

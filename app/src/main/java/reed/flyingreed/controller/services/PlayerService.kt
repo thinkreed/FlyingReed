@@ -5,7 +5,6 @@ import android.content.Intent
 import android.media.AudioManager
 import android.os.IBinder
 import android.provider.MediaStore
-import android.util.Log
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
@@ -13,9 +12,8 @@ import org.greenrobot.eventbus.EventBus
 import reed.flyingreed.IPlayerService
 import reed.flyingreed.component.DataFetcher
 import reed.flyingreed.component.Observer
-import reed.flyingreed.model.Const
 import reed.flyingreed.model.Model
-import reed.flyingreed.mvvm.Events.MusicChangeEvent
+import reed.flyingreed.mvvm.Events.MediaChangeEvent
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
 
 
@@ -35,7 +33,7 @@ class PlayerService : Service(), Observer {
 
     private lateinit var mData: MutableList<Model>
 
-    private var mJob :Job? = null
+    private var mJob: Job? = null
 
     private val mBinder = object : IPlayerService.Stub() {
 
@@ -45,7 +43,7 @@ class PlayerService : Service(), Observer {
 
         override fun start() {
             mPlayer.start()
-            EventBus.getDefault().post(MusicChangeEvent(mData[mMusicIndex]))
+            EventBus.getDefault().post(MediaChangeEvent(mData[mMusicIndex]))
         }
 
         override fun stop() {
@@ -73,7 +71,8 @@ class PlayerService : Service(), Observer {
         override fun initWithFavor(favor: Int) {
             mFavor = favor
             mJob = launch(CommonPool) {
-                DataFetcher.getData(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
+                DataFetcher.getData(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                        DataFetcher::getMusics)
             }
         }
 
