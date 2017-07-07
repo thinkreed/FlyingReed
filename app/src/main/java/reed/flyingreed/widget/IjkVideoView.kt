@@ -1,18 +1,21 @@
 package reed.flyingreed.widget
 
 import android.content.Context
+import android.net.Uri
 import android.util.AttributeSet
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import tv.danmaku.ijk.media.player.IjkMediaPlayer
 
 /**
  * Created by thinkreed on 2017/7/6.
  */
 
-class VideoView(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int)
+class IjkVideoView(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int)
     : SurfaceView(context, attrs, defStyleAttr, defStyleRes) {
 
     private lateinit var mSurfaceHolder: SurfaceHolder
+    private val mPlayer = IjkMediaPlayer()
 
     init {
         holder.addCallback(object : SurfaceHolder.Callback {
@@ -34,4 +37,13 @@ class VideoView(context: Context, attrs: AttributeSet, defStyleAttr: Int, defSty
 
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int)
             : this(context, attrs, defStyleAttr, 0)
+
+    fun openVideo(uri: String) {
+        mPlayer.setDisplay(mSurfaceHolder)
+        mPlayer.dataSource = uri
+        mPlayer.setOnCompletionListener {
+            mPlayer.start()
+        }
+        mPlayer.prepareAsync()
+    }
 }
