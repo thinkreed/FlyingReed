@@ -21,8 +21,12 @@ class VideoPlayerFragment : Fragment() {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onResume() {
+        super.onResume()
         val model: Model = arguments.getParcelable(Const.KEY_MODEL)
-        video_player.openVideo(model.video.path)
+        video_player.setVideoPath(model.video.path)
     }
 
     companion object {

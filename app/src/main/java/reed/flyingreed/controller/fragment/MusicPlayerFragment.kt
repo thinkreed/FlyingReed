@@ -12,7 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import reed.flyingreed.R
-import kotlinx.android.synthetic.main.fragment_player.*;
+import kotlinx.android.synthetic.main.fragment_music_player.*;
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode

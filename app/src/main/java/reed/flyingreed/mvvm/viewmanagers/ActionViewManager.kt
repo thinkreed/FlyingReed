@@ -14,13 +14,15 @@ import reed.flyingreed.mvvm.ViewManager
 
 class ActionViewManager :ViewManager<Model>() {
     override fun bind(old: Model, new: Model) {
-        view?.let {
-            val v = view
-            val intent = Intent(v?.context, VideoPlayerActivity::class.java)
-            val bundle = Bundle()
-            bundle.putParcelable(Const.KEY_MODEL, new)
-            intent.putExtras(bundle)
-            view?.context?.startActivity(intent)
+        val v = view
+        v?.let {
+            v.setOnClickListener {
+                val intent = Intent(v.context, VideoPlayerActivity::class.java)
+                val bundle = Bundle()
+                bundle.putParcelable(Const.KEY_MODEL, new)
+                intent.putExtras(bundle)
+                v.context.startActivity(intent)
+            }
         }
     }
 }

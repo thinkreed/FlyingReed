@@ -6,6 +6,7 @@ import reed.flyingreed.R
 import reed.flyingreed.model.Model
 import reed.flyingreed.model.Template
 import reed.flyingreed.mvvm.ViewModel
+import reed.flyingreed.mvvm.viewmanagers.ActionViewManager
 import reed.flyingreed.mvvm.viewmanagers.BaseViewManager
 import reed.flyingreed.mvvm.viewmodels.VideoItemViewModel
 
@@ -27,6 +28,7 @@ class ListAdapter : BaseAdapter<Model>() {
                         .add(R.id.avatar, BaseViewManager())
                         .add(R.id.cover, BaseViewManager())
                         .add(R.id.artist, BaseViewManager())
+                        .add(0, ActionViewManager())
             }
             else -> throw IllegalArgumentException("not support type")
         }

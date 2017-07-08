@@ -1,49 +1,66 @@
 package reed.flyingreed.widget
 
 import android.content.Context
-import android.net.Uri
+import android.media.AudioManager
 import android.util.AttributeSet
 import android.view.SurfaceHolder
-import android.view.SurfaceView
+import android.widget.FrameLayout
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
 
-/**
- * Created by thinkreed on 2017/7/6.
- */
 
-class IjkVideoView(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int)
-    : SurfaceView(context, attrs, defStyleAttr, defStyleRes) {
+class IjkVideoView(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs),
+        SurfaceViewRender.SHCallback {
 
-    private lateinit var mSurfaceHolder: SurfaceHolder
-    private val mPlayer = IjkMediaPlayer()
+    private val mRenderView: IRenderView
+    private val mMediaPlayer = IjkMediaPlayer()
+    private val mAttrs = attrs
 
     init {
-        holder.addCallback(object : SurfaceHolder.Callback {
-            override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
-            }
-
-            override fun surfaceDestroyed(holder: SurfaceHolder?) {
-            }
-
-            override fun surfaceCreated(holder: SurfaceHolder?) {
-                holder?.let {
-                    mSurfaceHolder = holder
-                }
-            }
-        })
+        mRenderView = initRenderView(RenderType.SURFACE)
+        mRenderView.addSHCallback(this)
+        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
+        mMediaPlayer.setOnPreparedListener {
+            mMediaPlayer.start()
+        }
+        addView(mRenderView.getView())
     }
 
-    constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
+    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
+    }
 
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int)
-            : this(context, attrs, defStyleAttr, 0)
+    override fun surfaceDestroyed(holder: SurfaceHolder?) {
+    }
 
-    fun openVideo(uri: String) {
-        mPlayer.setDisplay(mSurfaceHolder)
-        mPlayer.dataSource = uri
-        mPlayer.setOnCompletionListener {
-            mPlayer.start()
+    override fun surfaceCreated(holder: SurfaceHolder?) {
+        if (holder != null) {
+            mMediaPlayer.setDisplay(holder)
+            mMediaPlayer.prepareAsync()
         }
-        mPlayer.prepareAsync()
+    }
+
+    override fun onDetachedFromWindow() {
+        mMediaPlayer.stop()
+        mMediaPlayer.reset()
+        mRenderView.removeSHCallback(this)
+        super.onDetachedFromWindow()
+    }
+
+    fun setVideoPath(path:String) {
+        mMediaPlayer.dataSource = path
+    }
+
+    private fun initRenderView(renderType: RenderType): IRenderView {
+        return when (renderType) {
+            RenderType.SURFACE -> {
+                SurfaceViewRender(context, mAttrs)
+            }
+            RenderType.TEXTURE -> {
+                TextureRenderView(context)
+            }
+        }
+    }
+
+    enum class RenderType {
+        SURFACE, TEXTURE
     }
 }
