@@ -1,4 +1,4 @@
-# FlyingReed is a simple style music player
+# FlyingReed is a simple style media player
 
 get the app from google play:[https://play.google.com/store/apps/details?id=reed.flyingreed](https://play.google.com/store/apps/details?id=reed.flyingreed)
 
