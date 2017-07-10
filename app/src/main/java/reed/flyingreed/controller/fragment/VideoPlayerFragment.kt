@@ -26,13 +26,6 @@ class VideoPlayerFragment : Fragment() {
         mViewModel = VideoPlayerViewModel(container,
                 R.layout.fragment_video_player, Model())
                 .add(R.id.video_player, ActionViewManager(null))
-                .add(R.id.progress, ActionViewManager({}))
-                .add(R.id.play_pause, ActionViewManager({ _ ->
-                    play_pause.setOnClickListener {
-                        if (video_player.isPlaying())
-                            video_player.pause() else video_player.start()
-                    }
-                }))
         return mViewModel.rootView
     }
 

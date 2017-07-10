@@ -2,6 +2,7 @@ package reed.flyingreed.mvvm.viewmanagers
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.MediaController
 import reed.flyingreed.R
 import reed.flyingreed.controller.activity.VideoPlayerActivity
 import reed.flyingreed.model.Const
@@ -36,6 +37,7 @@ class ActionViewManager(val action: ((Model) -> Unit)?) : ViewManager<Model>() {
                 R.id.video_player -> {
                     view?.let {
                         val ijkVideoView = view as IjkVideoView
+                        ijkVideoView.setMediaController(MediaController(ijkVideoView.context))
                         ijkVideoView.setVideoPath(new.video.path)
                     }
                 }
