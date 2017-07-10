@@ -49,6 +49,12 @@ class IjkVideoView(context: Context, attrs: AttributeSet) : FrameLayout(context,
         mMediaPlayer.dataSource = path
     }
 
+    fun isPlaying():Boolean = mMediaPlayer.isPlaying
+
+    fun pause() = mMediaPlayer.pause()
+
+    fun start() = mMediaPlayer.start()
+
     private fun initRenderView(renderType: RenderType): IRenderView {
         return when (renderType) {
             RenderType.SURFACE -> {

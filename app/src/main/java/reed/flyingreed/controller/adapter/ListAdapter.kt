@@ -28,7 +28,7 @@ class ListAdapter : BaseAdapter<Model>() {
                         .add(R.id.avatar, BaseViewManager())
                         .add(R.id.cover, BaseViewManager())
                         .add(R.id.artist, BaseViewManager())
-                        .add(0, ActionViewManager())
+                        .add(0, ActionViewManager(null))
             }
             else -> throw IllegalArgumentException("not support type")
         }
