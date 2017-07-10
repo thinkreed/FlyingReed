@@ -19,7 +19,7 @@ import reed.flyingreed.mvvm.viewmodels.VideoPlayerViewModel
  */
 class VideoPlayerFragment : Fragment() {
 
-    private lateinit var mViewModel:ViewModel<Model>
+    private lateinit var mViewModel: ViewModel<Model>
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -27,8 +27,12 @@ class VideoPlayerFragment : Fragment() {
                 R.layout.fragment_video_player, Model())
                 .add(R.id.video_player, ActionViewManager(null))
                 .add(R.id.progress, ActionViewManager({}))
-                .add(R.id.play_pause, ActionViewManager({_ ->
-                    if (video_player.isPlaying()) video_player.start() else video_player.pause()}))
+                .add(R.id.play_pause, ActionViewManager({ _ ->
+                    play_pause.setOnClickListener {
+                        if (video_player.isPlaying())
+                            video_player.pause() else video_player.start()
+                    }
+                }))
         return mViewModel.rootView
     }
 

@@ -21,17 +21,20 @@ class ActionViewManager(val action: ((Model) -> Unit)?) : ViewManager<Model>() {
         } else {
             when (id) {
                 0 -> {
-                    view?.let {
-                        val v = view
-                        val intent = Intent(v?.context, VideoPlayerActivity::class.java)
-                        val bundle = Bundle()
-                        bundle.putParcelable(Const.KEY_MODEL, new)
-                        intent.putExtras(bundle)
-                        view?.context?.startActivity(intent)
+                    val v = view
+                    v?.let {
+                        v.setOnClickListener {
+                            val intent = Intent(v.context, VideoPlayerActivity::class.java)
+                            val bundle = Bundle()
+                            bundle.putParcelable(Const.KEY_MODEL, new)
+                            intent.putExtras(bundle)
+                            v.context?.startActivity(intent)
+                        }
                     }
+
                 }
                 R.id.video_player -> {
-                    view.let {
+                    view?.let {
                         val ijkVideoView = view as IjkVideoView
                         ijkVideoView.setVideoPath(new.video.path)
                     }

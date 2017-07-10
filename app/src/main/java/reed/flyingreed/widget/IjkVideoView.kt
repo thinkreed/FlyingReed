@@ -11,6 +11,8 @@ import tv.danmaku.ijk.media.player.IjkMediaPlayer
 class IjkVideoView(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs),
         SurfaceViewRender.SHCallback {
 
+
+
     private val mRenderView: IRenderView
     private val mMediaPlayer = IjkMediaPlayer()
     private val mAttrs = attrs
@@ -45,11 +47,11 @@ class IjkVideoView(context: Context, attrs: AttributeSet) : FrameLayout(context,
         super.onDetachedFromWindow()
     }
 
-    fun setVideoPath(path:String) {
+    fun setVideoPath(path: String) {
         mMediaPlayer.dataSource = path
     }
 
-    fun isPlaying():Boolean = mMediaPlayer.isPlaying
+    fun isPlaying(): Boolean = mMediaPlayer.isPlaying
 
     fun pause() = mMediaPlayer.pause()
 
@@ -68,5 +70,9 @@ class IjkVideoView(context: Context, attrs: AttributeSet) : FrameLayout(context,
 
     enum class RenderType {
         SURFACE, TEXTURE
+    }
+
+    enum class State {
+        PLAYING, PAUSED, IDLE
     }
 }

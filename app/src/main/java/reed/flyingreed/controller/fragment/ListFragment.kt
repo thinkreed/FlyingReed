@@ -36,6 +36,8 @@ class ListFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        //reset adapter
+        list.adapter = null
         super.onDestroyView()
     }
 
