@@ -38,6 +38,10 @@ class VideoPlayerFragment : Fragment() {
         super.onResume()
     }
 
+    override fun onPause() {
+        super.onPause()
+    }
+
     companion object {
         fun getInstance(bundle: Bundle): VideoPlayerFragment {
             val fragment = VideoPlayerFragment()

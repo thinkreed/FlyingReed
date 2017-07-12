@@ -6,6 +6,7 @@ import reed.flyingreed.component.DataFetcher
 import reed.flyingreed.component.Observer
 import reed.flyingreed.model.ViewHolder
 import reed.flyingreed.mvvm.ViewModel
+import reed.flyingreed.widget.BaseScrollListener
 
 
 /**
@@ -15,9 +16,13 @@ import reed.flyingreed.mvvm.ViewModel
 abstract class BaseAdapter<T> : RecyclerView.Adapter<ViewHolder<T>>(), Observer {
 
     protected var data = mutableListOf<T>()
+    private val mOnScrollListener by lazy {
+        BaseScrollListener()
+    }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
         super.onAttachedToRecyclerView(recyclerView)
+        recyclerView?.addOnScrollListener(mOnScrollListener)
         DataFetcher.registerObserver(this)
     }
 
@@ -37,6 +42,7 @@ abstract class BaseAdapter<T> : RecyclerView.Adapter<ViewHolder<T>>(), Observer 
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView?) {
         DataFetcher.unregisterObserver(this)
+        recyclerView?.removeOnScrollListener(mOnScrollListener)
         super.onDetachedFromRecyclerView(recyclerView)
     }
 }

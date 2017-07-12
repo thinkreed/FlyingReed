@@ -67,6 +67,7 @@ class IjkVideoView(context: Context, attrs: AttributeSet) : FrameLayout(context,
     override fun onDetachedFromWindow() {
         mMediaPlayer.stop()
         mMediaPlayer.reset()
+        mMediaPlayer.release()
         mRenderView.removeSHCallback(this)
         super.onDetachedFromWindow()
     }
