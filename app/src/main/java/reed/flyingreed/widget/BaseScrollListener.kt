@@ -1,6 +1,9 @@
 package reed.flyingreed.widget
 
+import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
 
 
@@ -9,6 +12,8 @@ import com.bumptech.glide.Glide
  */
 
 class BaseScrollListener : RecyclerView.OnScrollListener() {
+
+    private var lastVisibles:IntArray? = null
 
     override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
         when (newState) {
@@ -22,6 +27,21 @@ class BaseScrollListener : RecyclerView.OnScrollListener() {
     }
 
     override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
-        super.onScrolled(recyclerView, dx, dy)
+        val layoutManager = recyclerView?.layoutManager
+        when (layoutManager) {
+            is LinearLayoutManager -> {
+                if (lastVisibles == null) {
+                    lastVisibles = IntArray(1, {-1})
+                }
+            }
+            is StaggeredGridLayoutManager -> {
+                if (lastVisibles == null) {
+                    lastVisibles = IntArray(layoutManager.spanCount, {-1})
+                }
+                val firsts = intArrayOf()
+                layoutManager.findFirstVisibleItemPositions(firsts)
+            }
+            else -> throw IllegalArgumentException("not a supported layout manager")
+        }
     }
 }
