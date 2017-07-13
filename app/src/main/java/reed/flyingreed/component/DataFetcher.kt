@@ -40,29 +40,17 @@ object DataFetcher {
         }
     }
 
-    fun getVideos(uri: Uri): MutableList<Model>? {
+    fun getModelsFromCursor(cursor: Cursor?, getModel: (Cursor) -> Model): MutableList<Model>? {
         var models: MutableList<Model>? = null
-        val cursor: Cursor? = KotlinApplication.instance.contentResolver.query(uri,
-                null, null,
-                null, MediaStore.Video.Media.TITLE + " ASC")
-        cursor?.let {
+        if (cursor != null) {
             models = mutableListOf<Model>()
             if (cursor.count > 0) {
-                val thumbnail = Uri.parse("content://media/external/video/media")
                 while (cursor.moveToNext()) {
-                    val video = Video(title = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.TITLE)),
-                            path = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA)),
-                            id = cursor.getInt(cursor.getColumnIndex(MediaStore.Video.Media._ID)),
-                            artist = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.ARTIST)),
-                            cover = ContentUris.withAppendedId(thumbnail,
-                                    cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media._ID))))
-                    models?.add(Model(video = video,
-                            cover = video.cover,
-                            title = video.title,
-                            id = video.id,
-                            template = Template.ITEM_VIDEO,
-                            description = video.artist,
-                            motivation = Motivation(VideoPlayerActivity::class.java)))
+                    try {
+                        models.add(getModel.invoke(cursor))
+                    } catch (e: IllegalArgumentException) {
+                        continue
+                    }
                 }
             }
             cursor.close()
@@ -70,34 +58,21 @@ object DataFetcher {
         return models
     }
 
+    fun getVideos(uri: Uri): MutableList<Model>? {
+        val cursor: Cursor? = KotlinApplication.instance.contentResolver.query(uri,
+                null, null,
+                null, MediaStore.Video.Media.TITLE + " ASC")
+        return getModelsFromCursor(cursor,
+                { videoCursor -> ModelFactory.createModelFromVideoCursor(videoCursor) })
+
+    }
+
     fun getMusics(uri: Uri): MutableList<Model>? {
-        var models: MutableList<Model>? = null
         val cursor: Cursor? = KotlinApplication.instance.contentResolver.query(uri,
                 null, MediaStore.Audio.Media.IS_MUSIC + " !=0",
                 null, MediaStore.Audio.Media.TITLE + " ASC")
-        cursor?.let {
-            models = mutableListOf<Model>()
-            if (cursor.count > 0) {
-                val albumUri = Uri.parse("content://media/external/audio/albumart")
-                while (cursor.moveToNext()) {
-                    val song = Music(title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)),
-                            path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)),
-                            id = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media._ID)),
-                            artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)),
-                            cover = ContentUris.withAppendedId(albumUri,
-                                    cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID))))
-                    models?.add(Model(music = song,
-                            cover = song.cover,
-                            title = song.title,
-                            id = song.id,
-                            template = Template.ITEM_VIDEO,
-                            description = song.artist,
-                            motivation = Motivation(MusicPlayerActivity::class.java)))
-                }
-            }
-            cursor.close()
-        }
-        return models
+        return getModelsFromCursor(cursor,
+                { musicCursor -> ModelFactory.createModelFromMusicCursor(musicCursor) })
     }
 
     private suspend fun getHttpData(uri: Uri) {
