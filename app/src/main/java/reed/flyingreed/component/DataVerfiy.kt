@@ -1,7 +1,5 @@
 package reed.flyingreed.component
 
-import android.database.Cursor
-
 /**
  * Created by thinkreed on 2017/7/13.
  */
