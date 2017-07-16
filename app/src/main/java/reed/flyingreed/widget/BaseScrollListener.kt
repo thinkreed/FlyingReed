@@ -1,14 +1,27 @@
 package reed.flyingreed.widget
 
+
 import android.graphics.Bitmap
+import android.net.Uri
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
-import com.bumptech.glide.RequestManager
-import com.bumptech.glide.request.target.SimpleTarget
-import com.bumptech.glide.request.transition.Transition
+import com.bumptech.glide.TransitionOptions
+import com.bumptech.glide.load.Key
+import com.bumptech.glide.load.ResourceDecoder
+import com.bumptech.glide.load.Transformation
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
+import com.bumptech.glide.load.resource.bitmap.TransformationUtils
+import com.bumptech.glide.request.RequestOptions
 import reed.flyingreed.KotlinApplication
+
+import reed.flyingreed.controller.adapter.ListAdapter
+import java.io.InputStream
+import java.nio.charset.Charset
+import java.security.MessageDigest
 
 
 /**
@@ -17,8 +30,12 @@ import reed.flyingreed.KotlinApplication
 
 class BaseScrollListener : RecyclerView.OnScrollListener() {
 
-    private val target by lazy {
-        PreloadTarget.obtain<Bitmap>(Glide.with(KotlinApplication.instance), 0, 0)
+    private val sizeRequest by lazy {
+        val requestOptions = RequestOptions()
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
+        Glide.with(KotlinApplication.instance)
+                .applyDefaultRequestOptions(requestOptions)
+
     }
 
     private val lastVisibles = intArrayOf(-1)
@@ -36,6 +53,7 @@ class BaseScrollListener : RecyclerView.OnScrollListener() {
 
     override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
         val layoutManager = recyclerView?.layoutManager
+        val adapter: ListAdapter = recyclerView?.adapter as ListAdapter
         when (layoutManager) {
             is LinearLayoutManager -> {
 
@@ -47,38 +65,41 @@ class BaseScrollListener : RecyclerView.OnScrollListener() {
                 val first = firsts[0]
                 val last = lastVisibles[0]
                 val increase = (first > last)
-                preload(first, )
+                val visibleCount = layoutManager.findLastVisibleItemPositions(firsts)[0] - first
+                if (first > last) {
+                    preload(first + visibleCount, increase, adapter)
+                } else {
+                    preload(first, increase, adapter)
+                }
             }
             else -> throw IllegalArgumentException("not a supported layout manager")
         }
     }
 
-    private fun preload(firstVisible: Int, increase: Boolean) {
+    private fun preload(start: Int, increase: Boolean, adapter: ListAdapter) {
+        if (increase) {
+            for (i in 0..5) {
+            }
+        } else {
 
+        }
     }
 
-    class PreloadTarget<Z> private constructor(private val requestManager: RequestManager
-                                               , width: Int, height: Int)
-        : SimpleTarget<Z>(width, height) {
+    data class Size(val width: Int, val height: Int)
 
-        override fun onResourceReady(resource: Z, transition: Transition<in Z>) {
-            requestManager.clear(this)
+    class MyTrans :BitmapTransformation() {
+
+        val ID = "reed.flyingreed.widget.mytrans"
+        val ID_BYTES = ID.toByteArray(Charset.defaultCharset())
+
+        override fun updateDiskCacheKey(messageDigest: MessageDigest?) {
+            messageDigest?.update(ID_BYTES)
         }
 
-        companion object {
-
-            /**
-             * Returns a PreloadTarget.
-
-             * @param width  The width in pixels of the desired resource.
-             * *
-             * @param height The height in pixels of the desired resource.
-             * *
-             * @param <Z>    The type of the desired resource.
-            </Z> */
-            fun <Z> obtain(requestManager: RequestManager, width: Int, height: Int): PreloadTarget<Z> {
-                return PreloadTarget(requestManager, width, height)
-            }
+        override fun transform(pool: BitmapPool, toTransform: Bitmap, outWidth: Int, outHeight: Int)
+                : Bitmap {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
+
     }
 }

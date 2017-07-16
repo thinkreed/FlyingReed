@@ -40,6 +40,10 @@ abstract class BaseAdapter<T> : RecyclerView.Adapter<ViewHolder<T>>(), Observer 
         return data.size
     }
 
+    fun getData(position: Int): T {
+        return data[position]
+    }
+
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView?) {
         DataFetcher.unregisterObserver(this)
         recyclerView?.removeOnScrollListener(mOnScrollListener)
