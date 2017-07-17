@@ -1,27 +1,18 @@
 package reed.flyingreed.widget
 
-
-import android.graphics.Bitmap
 import android.net.Uri
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.StaggeredGridLayoutManager
+import android.util.Log
 import com.bumptech.glide.Glide
-import com.bumptech.glide.TransitionOptions
-import com.bumptech.glide.load.Key
-import com.bumptech.glide.load.ResourceDecoder
-import com.bumptech.glide.load.Transformation
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
-import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
-import com.bumptech.glide.load.resource.bitmap.TransformationUtils
-import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 import reed.flyingreed.KotlinApplication
 
+
 import reed.flyingreed.controller.adapter.ListAdapter
-import java.io.InputStream
-import java.nio.charset.Charset
-import java.security.MessageDigest
+import java.util.*
 
 
 /**
@@ -30,15 +21,7 @@ import java.security.MessageDigest
 
 class BaseScrollListener : RecyclerView.OnScrollListener() {
 
-    private val sizeRequest by lazy {
-        val requestOptions = RequestOptions()
-                .diskCacheStrategy(DiskCacheStrategy.DATA)
-        Glide.with(KotlinApplication.instance)
-                .applyDefaultRequestOptions(requestOptions)
-
-    }
-
-    private val lastVisibles = intArrayOf(-1)
+    private val lastVisibles = IntArray(2, { -1 })
 
     override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
         when (newState) {
@@ -60,46 +43,45 @@ class BaseScrollListener : RecyclerView.OnScrollListener() {
             }
             is StaggeredGridLayoutManager -> {
 
-                val firsts = intArrayOf()
+                val firsts = IntArray(2, { -1 })
                 layoutManager.findFirstVisibleItemPositions(firsts)
                 val first = firsts[0]
                 val last = lastVisibles[0]
                 val increase = (first > last)
                 val visibleCount = layoutManager.findLastVisibleItemPositions(firsts)[0] - first
-                if (first > last) {
-                    preload(first + visibleCount, increase, adapter)
-                } else {
-                    preload(first, increase, adapter)
-                }
+//                if (first > last) {
+//                    preload(first + visibleCount, increase, adapter)
+//                } else {
+//                    preload(first, increase, adapter)
+//                }
+                Glide.with(KotlinApplication.instance).`as`(ReedAppModule.Size::class.java)
+                        .load(adapter.getData(5).cover)
+                        .into(object : SimpleTarget<ReedAppModule.Size>() {
+                            override fun onResourceReady(resource: ReedAppModule.Size?,
+                                                         transition: Transition<in ReedAppModule.Size>?) {
+                                Log.d("thinkreed", String.format(Locale.ROOT, "%dx%d",
+                                        resource?.width, resource?.height))
+                            }
+
+                        })
             }
             else -> throw IllegalArgumentException("not a supported layout manager")
         }
     }
 
-    private fun preload(start: Int, increase: Boolean, adapter: ListAdapter) {
-        if (increase) {
-            for (i in 0..5) {
-            }
-        } else {
+    private fun computeSize(prefered:Int, uri: Uri) {
 
+    }
+
+    private fun preload(start: Int, increase: Boolean, adapter: ListAdapter) {
+        if (start >= 5 && start < adapter.itemCount - 5) {
+            preload(start, start + if (increase) 5 else -5, adapter)
         }
     }
 
-    data class Size(val width: Int, val height: Int)
+    private fun preload(from: Int, to: Int, adapter: ListAdapter) {
+        for (i in from..to) {
 
-    class MyTrans :BitmapTransformation() {
-
-        val ID = "reed.flyingreed.widget.mytrans"
-        val ID_BYTES = ID.toByteArray(Charset.defaultCharset())
-
-        override fun updateDiskCacheKey(messageDigest: MessageDigest?) {
-            messageDigest?.update(ID_BYTES)
         }
-
-        override fun transform(pool: BitmapPool, toTransform: Bitmap, outWidth: Int, outHeight: Int)
-                : Bitmap {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
     }
 }

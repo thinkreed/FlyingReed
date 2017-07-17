@@ -23,6 +23,9 @@
         <meta-data
             android:name="UMENG_APPKEY"
             android:value="5959c9302ae85b63e0000d4f"></meta-data>
+        <meta-data
+            android:name="reed.flyingreed.widget.ReedAppModule"
+            android:value="AppGlideModule" />
 
         <activity
             android:name=".controller.activity.MainActivity"
