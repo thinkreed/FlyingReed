@@ -29,7 +29,7 @@ class PlayerService : Service(), Observer {
 
     private var mFavor = -1
 
-    private var mMusicIndex = 0
+    private var mMusicIndex = -1
 
     private lateinit var mData: MutableList<Model>
 
@@ -42,8 +42,10 @@ class PlayerService : Service(), Observer {
         }
 
         override fun start() {
-            mPlayer.start()
-            EventBus.getDefault().post(MediaChangeEvent(mData[mMusicIndex]))
+            if (mData.isNotEmpty()) {
+                mPlayer.start()
+                EventBus.getDefault().post(MediaChangeEvent(mData[mMusicIndex]))
+            }
         }
 
         override fun stop() {

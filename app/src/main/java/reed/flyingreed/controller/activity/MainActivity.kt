@@ -11,6 +11,7 @@ import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
 import reed.flyingreed.R
 import reed.flyingreed.algo.zigZag
+import reed.flyingreed.controller.fragment.EmptyFragment
 import reed.flyingreed.controller.fragment.ListFragment
 import reed.flyingreed.controller.fragment.LiveFragment
 import reed.flyingreed.controller.fragment.MusicFragment
@@ -56,7 +57,7 @@ class MainActivity : AppCompatActivity() {
                 MusicFragment.getInstance()
             }
             R.id.navigation_discover -> {
-                ListFragment.instance
+                EmptyFragment.getInstance()
             }
             R.id.navigation_user_center -> {
                 LiveFragment.getInstance()
