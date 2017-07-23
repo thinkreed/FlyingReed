@@ -1,5 +1,6 @@
 package reed.flyingreed.widget
 
+import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.View
 import tv.danmaku.ijk.media.player.IMediaPlayer
@@ -9,8 +10,8 @@ import tv.danmaku.ijk.media.player.IMediaPlayer
  */
 
 interface IRenderView {
-    fun bindToPlayer(holder: SurfaceHolder, mp: IMediaPlayer)
+    fun bindToPlayer(surface: Surface, mp: IMediaPlayer)
     fun addSHCallback(shCallback: SurfaceViewRender.SHCallback)
     fun removeSHCallback(shCallback: SurfaceViewRender.SHCallback)
-    fun getView():View
+    fun getView(): View
 }

@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
                 MusicFragment.getInstance()
             }
             R.id.navigation_discover -> {
-                EmptyFragment.getInstance()
+                ListFragment.instance
             }
             R.id.navigation_user_center -> {
                 LiveFragment.getInstance()

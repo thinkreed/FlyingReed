@@ -8,4 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="FloatingActivity" parent="@android:style/Theme.Panel">
+    </style>
+
 </resources>

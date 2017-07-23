@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/FlyingReed.iml" filepath="$PROJECT_DIR$/FlyingReed.iml" />
       <module fileurl="file://E:\projects\FlyingReed-develop\FlyingReed.iml" filepath="E:\projects\FlyingReed-develop\FlyingReed.iml" />
       <module fileurl="file://$PROJECT_DIR$/FlyingReed-develop.iml" filepath="$PROJECT_DIR$/FlyingReed-develop.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />

@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.AudioManager
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.Surface
 import android.view.SurfaceHolder
 import android.widget.FrameLayout
 import android.widget.MediaController
@@ -38,7 +39,7 @@ class IjkVideoView(context: Context, attrs: AttributeSet) : FrameLayout(context,
     }
 
     init {
-        mRenderView = initRenderView(RenderType.SURFACE)
+        mRenderView = initRenderView(RenderType.TEXTURE)
         mRenderView.addSHCallback(this)
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
         mMediaPlayer.setOnPreparedListener {
@@ -51,15 +52,15 @@ class IjkVideoView(context: Context, attrs: AttributeSet) : FrameLayout(context,
         addView(mRenderView.getView())
     }
 
-    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
+    override fun surfaceChanged(surface: Surface?, format: Int, width: Int, height: Int) {
     }
 
-    override fun surfaceDestroyed(holder: SurfaceHolder?) {
+    override fun surfaceDestroyed(surface: Surface?) {
     }
 
-    override fun surfaceCreated(holder: SurfaceHolder?) {
-        if (holder != null) {
-            mMediaPlayer.setDisplay(holder)
+    override fun surfaceCreated(surface: Surface?) {
+        if (surface != null) {
+            mMediaPlayer.setSurface(surface)
             mMediaPlayer.prepareAsync()
         }
     }

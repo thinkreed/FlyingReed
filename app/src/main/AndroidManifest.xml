@@ -86,7 +86,8 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name=".controller.activity.VideoPlayerActivity"
-            android:screenOrientation="landscape" />
+            android:theme="@style/FloatingActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

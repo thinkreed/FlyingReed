@@ -37,7 +37,9 @@ class ActionViewManager(val action: ((Model) -> Unit)?) : ViewManager<Model>() {
                 R.id.video_player -> {
                     view?.let {
                         val ijkVideoView = view as IjkVideoView
-                        ijkVideoView.setMediaController(MediaController(ijkVideoView.context))
+                        val mediaController = MediaController(ijkVideoView.context)
+                        mediaController.setAnchorView(ijkVideoView)
+                        ijkVideoView.setMediaController(mediaController)
                         ijkVideoView.setVideoPath(new.video.path)
                     }
                 }
