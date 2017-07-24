@@ -2,6 +2,7 @@ package reed.flyingreed.widget
 
 import android.content.Context
 import android.media.AudioManager
+import android.media.MediaPlayer
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.Surface

@@ -18,7 +18,6 @@ class DragLayout(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
     private lateinit var mDragContent: View
     private var mVerticalRange = 0
     private var mHorizontalRange = 0
-    private var mTop = 0
     private var mViewPositionChanged: ((Int, Int) -> Unit)? = null
     private val mDragHelper = ViewDragHelper.create(this, object
         : ViewDragHelper.Callback() {

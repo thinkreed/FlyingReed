@@ -1,8 +1,6 @@
 package reed.flyingreed.controller.activity
 
-import android.app.Dialog
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
 import android.support.v4.app.FragmentActivity
 import android.view.LayoutInflater
 import android.view.ViewGroup
