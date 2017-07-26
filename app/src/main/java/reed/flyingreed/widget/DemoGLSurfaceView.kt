@@ -11,6 +11,7 @@ class DemoGLSurfaceView(context: Context) : GLSurfaceView(context) {
 
     init {
         setEGLContextClientVersion(2)
+        renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
         setRenderer(mRenderer)
     }
 }
