@@ -12,6 +12,7 @@ class DemoGLES20Activity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.decorView
         mGLView = DemoGLSurfaceView(this)
         setContentView(mGLView)
     }

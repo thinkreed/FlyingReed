@@ -1,11 +1,7 @@
 package reed.flyingreed.widget
 
 import java.nio.FloatBuffer
-import javax.swing.UIManager.put
-import java.nio.ByteOrder.nativeOrder
-import android.R.attr.order
 import java.nio.ByteBuffer
-import java.nio.ByteBuffer.allocateDirect
 import java.nio.ByteOrder
 
 
@@ -35,8 +31,8 @@ class DemoTriangle {
 
 
     companion object {
-        val COORDS_PER_VERTEX = 3
-        var triangleCoords = floatArrayOf(// in counterclockwise order:
+        internal val COORDS_PER_VERTEX = 3
+        internal var triangleCoords = floatArrayOf(// in counterclockwise order:
                 0.0f, 0.622008459f, 0.0f, // top
                 -0.5f, -0.311004243f, 0.0f, // bottom left
                 0.5f, -0.311004243f, 0.0f  // bottom right
