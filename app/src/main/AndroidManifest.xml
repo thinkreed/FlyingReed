@@ -12,8 +12,10 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
-
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
@@ -102,6 +104,7 @@
         <activity android:name=".controller.activity.DemoGLES20Activity">
 
         </activity>
+        <activity android:name=".experimental.camera.Camera2Activity"/>
     </application>
 
 </manifest>
