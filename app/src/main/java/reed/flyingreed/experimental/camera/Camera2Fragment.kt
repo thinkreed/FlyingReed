@@ -1,5 +1,8 @@
 package reed.flyingreed.experimental.camera
 
+import android.app.Activity
+import android.app.ActivityManager
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
@@ -7,6 +10,8 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.widget.PopupWindow
 import kotlinx.android.synthetic.main.fragment_camera2.*
 import kotlinx.coroutines.experimental.newCoroutineContext
 import reed.flyingreed.R

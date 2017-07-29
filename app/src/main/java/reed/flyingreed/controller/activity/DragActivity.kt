@@ -1,5 +1,9 @@
 package reed.flyingreed.controller.activity
 
+import android.app.ActivityManager
+import android.content.Context
+import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.view.LayoutInflater
@@ -12,10 +16,19 @@ import reed.flyingreed.widget.DragLayout
 abstract class DragActivity : FragmentActivity() {
 
     private lateinit var mDragLayout: DragLayout
+    private val mRect by lazy {
+        Rect()
+    }
+    private val mActivityManager by lazy {
+        this.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mDragLayout = DragLayout(this)
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            startLockTask()
+        }
     }
 
     override fun setContentView(layoutResID: Int) {
@@ -23,9 +36,9 @@ abstract class DragActivity : FragmentActivity() {
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         mDragLayout.setDragContent(LayoutInflater.from(this).inflate(layoutResID, null),
                 { top, _ ->
-                    val lp = window.attributes
-                    lp.y = top
-                    window.attributes = lp
+                    mRect.setEmpty()
+                    windowManager.defaultDisplay.getRectSize(mRect)
+                    mRect.top = top
                 })
     }
 }

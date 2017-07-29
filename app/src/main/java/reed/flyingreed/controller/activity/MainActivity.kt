@@ -27,7 +27,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.d("thinkreed", zigZag("PAYPALISHIRING", 3))
         checkPermission()
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
