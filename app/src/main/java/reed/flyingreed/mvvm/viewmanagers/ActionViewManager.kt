@@ -1,13 +1,16 @@
 package reed.flyingreed.mvvm.viewmanagers
 
-import android.content.Intent
-import android.os.Bundle
+import android.app.Activity
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.view.WindowManager.LayoutParams
 import android.widget.MediaController
 import reed.flyingreed.R
-import reed.flyingreed.controller.activity.VideoPlayerActivity
-import reed.flyingreed.model.Const
 import reed.flyingreed.model.Model
 import reed.flyingreed.mvvm.ViewManager
+import reed.flyingreed.widget.DragLayout
+import reed.flyingreed.widget.DragWindow
 import reed.flyingreed.widget.IjkVideoView
 
 
@@ -25,11 +28,8 @@ class ActionViewManager(val action: ((Model) -> Unit)?) : ViewManager<Model>() {
                     val v = view
                     v?.let {
                         v.setOnClickListener {
-                            val intent = Intent(v.context, VideoPlayerActivity::class.java)
-                            val bundle = Bundle()
-                            bundle.putParcelable(Const.KEY_MODEL, new)
-                            intent.putExtras(bundle)
-                            v.context?.startActivity(intent)
+                            val window = DragWindow(v.context, R.layout.fragment_video_player)
+                            window.show(v.context)
                         }
                     }
 

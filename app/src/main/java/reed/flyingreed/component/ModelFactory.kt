@@ -5,7 +5,6 @@ import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
 import reed.flyingreed.controller.activity.MusicPlayerActivity
-import reed.flyingreed.controller.activity.VideoPlayerActivity
 import reed.flyingreed.model.*
 
 /**
@@ -72,7 +71,6 @@ object ModelFactory {
                 title = video.title,
                 id = video.id,
                 template = Template.ITEM_VIDEO,
-                description = video.artist,
-                motivation = Motivation(VideoPlayerActivity::class.java))
+                description = video.artist)
     }
 }

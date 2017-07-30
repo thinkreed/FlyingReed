@@ -1,6 +1,5 @@
 package reed.flyingreed.component
 
-import android.content.ContentUris
 import android.database.Cursor
 import android.net.Uri
 import android.os.Handler
@@ -11,8 +10,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import reed.flyingreed.KotlinApplication
-import reed.flyingreed.controller.activity.MusicPlayerActivity
-import reed.flyingreed.controller.activity.VideoPlayerActivity
 import reed.flyingreed.model.*
 import reed.flyingreed.model.dtos.VideoInfo
 

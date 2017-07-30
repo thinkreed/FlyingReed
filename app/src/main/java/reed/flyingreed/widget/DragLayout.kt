@@ -7,6 +7,7 @@ import android.support.v4.widget.ViewDragHelper
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
 import java.util.concurrent.Callable
@@ -16,54 +17,10 @@ import java.util.concurrent.Callable
  */
 class DragLayout(context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs) {
 
-    private lateinit var mDragContent: View
     private var mVerticalRange = 0
     private var mHorizontalRange = 0
-    private var mViewPositionChanged: ((Int, Int) -> Unit)? = null
-    private val mDragHelper = ViewDragHelper.create(this, object
-        : ViewDragHelper.Callback() {
-        override fun tryCaptureView(child: View?, pointerId: Int): Boolean {
-            return true
-        }
-
-        override fun onViewCaptured(capturedChild: View?, activePointerId: Int) {
-            super.onViewCaptured(capturedChild, activePointerId)
-        }
-
-        override fun onViewPositionChanged(changedView: View?, left: Int,
-                                           top: Int, dx: Int, dy: Int) {
-            val percentage = top.toFloat() / mVerticalRange
-//            mDragContent.animate().scaleY(1 - percentage).scaleX(1 - percentage)
-//                    .x(mHorizontalRange * percentage/2)
-            mViewPositionChanged?.invoke(top, left)
-            mDragContent.x = mHorizontalRange * percentage / 2
-            mDragContent.scaleX = 1 - percentage
-            mDragContent.scaleY = 1 - percentage
-        }
-
-        override fun getViewHorizontalDragRange(child: View?): Int {
-            return 0
-        }
-
-        override fun getViewVerticalDragRange(child: View?): Int {
-            return mVerticalRange
-        }
-
-        override fun clampViewPositionHorizontal(child: View?, left: Int, dx: Int): Int {
-//            val leftBound = 0
-//            val rightBound = mDragContent.width
-//
-//            return Math.min(Math.max(left, leftBound), rightBound)
-            return 0
-        }
-
-        override fun clampViewPositionVertical(child: View?, top: Int, dy: Int): Int {
-            val topBound = 0
-            val bottomBound = getViewVerticalDragRange(child)
-
-            return Math.min(Math.max(top, topBound), bottomBound)
-        }
-    })
+    private var mViewPositionChanged: ((Float, Float, Float) -> Unit)? = null
+    private lateinit var mDragHelper: ViewDragHelper
 
     init {
         val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -75,14 +32,57 @@ class DragLayout(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
 
     constructor(context: Context) : this(context, null)
 
-    fun setDragContent(view: View, onViewPositionChanged: (Int, Int) -> Unit) {
-        mDragContent = view
+    fun setDragContent(contentView: View, onViewPositionChanged: (Float, Float, Float) -> Unit) {
+        mDragHelper = ViewDragHelper.create(this, object
+            : ViewDragHelper.Callback() {
+            override fun tryCaptureView(child: View?, pointerId: Int): Boolean {
+                return true
+            }
+
+            override fun onViewCaptured(capturedChild: View?, activePointerId: Int) {
+                super.onViewCaptured(capturedChild, activePointerId)
+            }
+
+            override fun onViewPositionChanged(changedView: View?, left: Int,
+                                               top: Int, dx: Int, dy: Int) {
+                val percentage = top.toFloat() / mVerticalRange
+                val x = mHorizontalRange * percentage / 2
+                val y = mVerticalRange * percentage / 2
+                mViewPositionChanged?.invoke(percentage, x, y)
+//            this@DragLayout.x = x
+//            this@DragLayout.scaleX = 1 - percentage
+//            this@DragLayout.scaleY = 1 - percentage
+            }
+
+            override fun getViewHorizontalDragRange(child: View?): Int {
+                return 0
+            }
+
+            override fun getViewVerticalDragRange(child: View?): Int {
+                return mVerticalRange
+            }
+
+            override fun clampViewPositionHorizontal(child: View?, left: Int, dx: Int): Int {
+//            val leftBound = 0
+//            val rightBound = mDragContent.width
+//
+//            return Math.min(Math.max(left, leftBound), rightBound)
+                return 0
+            }
+
+            override fun clampViewPositionVertical(child: View?, top: Int, dy: Int): Int {
+                val topBound = 0
+                val bottomBound = getViewVerticalDragRange(child)
+
+                return Math.min(Math.max(top, topBound), bottomBound)
+            }
+        })
         mViewPositionChanged = onViewPositionChanged
-        addView(mDragContent)
+        addView(contentView)
     }
 
     override fun computeScroll() {
-        if (mDragHelper.continueSettling(true)) {
+        if (mDragHelper?.continueSettling(true)) {
             ViewCompat.postInvalidateOnAnimation(this)
         }
     }
