@@ -62,7 +62,7 @@ class IjkVideoView(context: Context, attrs: AttributeSet) : FrameLayout(context,
     override fun surfaceCreated(surface: Surface?) {
         if (surface != null) {
             mMediaPlayer.setSurface(surface)
-            mMediaPlayer.prepareAsync()
+//            mMediaPlayer.prepareAsync()
         }
     }
 
@@ -119,7 +119,7 @@ class IjkVideoView(context: Context, attrs: AttributeSet) : FrameLayout(context,
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        if (mMediaControllor.isShowing) mMediaControllor.hide() else mMediaControllor.show()
+//        if (mMediaControllor.isShowing) mMediaControllor.hide() else mMediaControllor.show()
         return super.onTouchEvent(event)
     }
 

@@ -19,7 +19,7 @@ class DragLayout(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
 
     private var mVerticalRange = 0
     private var mHorizontalRange = 0
-    private var mViewPositionChanged: ((Float, Float, Float) -> Unit)? = null
+    private var mViewPositionChanged: ((Float, Int, Int) -> Unit)? = null
     private lateinit var mDragHelper: ViewDragHelper
 
     init {
@@ -32,7 +32,7 @@ class DragLayout(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
 
     constructor(context: Context) : this(context, null)
 
-    fun setDragContent(contentView: View, onViewPositionChanged: (Float, Float, Float) -> Unit) {
+    fun setDragContent(contentView: View, onViewPositionChanged: (Float, Int, Int) -> Unit) {
         mDragHelper = ViewDragHelper.create(this, object
             : ViewDragHelper.Callback() {
             override fun tryCaptureView(child: View?, pointerId: Int): Boolean {
@@ -48,10 +48,12 @@ class DragLayout(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
                 val percentage = top.toFloat() / mVerticalRange
                 val x = mHorizontalRange * percentage / 2
                 val y = mVerticalRange * percentage / 2
-                mViewPositionChanged?.invoke(percentage, x, y)
-//            this@DragLayout.x = x
-//            this@DragLayout.scaleX = 1 - percentage
-//            this@DragLayout.scaleY = 1 - percentage
+                this@DragLayout.x = x
+                this@DragLayout.y = y
+                this@DragLayout.scaleX = 1 - percentage
+                this@DragLayout.scaleY = 1 - percentage
+                mViewPositionChanged?.invoke(percentage,
+                        contentView.width, contentView.height)
             }
 
             override fun getViewHorizontalDragRange(child: View?): Int {

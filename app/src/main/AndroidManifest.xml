@@ -41,12 +41,12 @@
             android:name=".controller.activity.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <activity
             android:name=".controller.activity.MusicPlayerActivity"
@@ -95,16 +95,15 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-            android:name=".controller.activity.VideoPlayerActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/FloatingActivity" />
-        <activity
             android:name=".controller.activity.WebActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".controller.activity.DemoGLES20Activity">
 
         </activity>
-        <activity android:name=".experimental.camera.Camera2Activity"/>
+        <activity android:name=".experimental.camera.Camera2Activity" />
+        <activity android:name=".controller.activity.TestActivity" >
+
+        </activity>
     </application>
 
 </manifest>

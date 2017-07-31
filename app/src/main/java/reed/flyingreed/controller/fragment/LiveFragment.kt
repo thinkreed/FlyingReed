@@ -21,7 +21,7 @@ class LiveFragment : Fragment() {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        title.text = "live coming soon"
+        message.text = "live coming soon"
     }
 
     companion object {

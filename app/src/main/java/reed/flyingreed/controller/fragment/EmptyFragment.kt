@@ -18,7 +18,7 @@ class EmptyFragment :Fragment() {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        title.text = "coming soon"
+        message.text = "coming soon"
     }
 
     companion object {

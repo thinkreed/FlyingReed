@@ -1,15 +1,14 @@
 package reed.flyingreed.mvvm.viewmanagers
 
-import android.app.Activity
-import android.view.Gravity
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.view.LayoutInflater
-import android.view.ViewGroup
-import android.view.WindowManager.LayoutParams
+import android.view.WindowManager
 import android.widget.MediaController
+import android.widget.PopupWindow
 import reed.flyingreed.R
 import reed.flyingreed.model.Model
 import reed.flyingreed.mvvm.ViewManager
-import reed.flyingreed.widget.DragLayout
 import reed.flyingreed.widget.DragWindow
 import reed.flyingreed.widget.IjkVideoView
 
@@ -26,10 +25,16 @@ class ActionViewManager(val action: ((Model) -> Unit)?) : ViewManager<Model>() {
             when (id) {
                 0 -> {
                     val v = view
+
                     v?.let {
                         v.setOnClickListener {
-                            val window = DragWindow(v.context, R.layout.fragment_video_player)
-                            window.show(v.context)
+                            val contentView = LayoutInflater.from(v.context)
+                                    .inflate(R.layout.fragment_video_player, null)
+                            val pop = DragWindow(contentView,
+                                    WindowManager.LayoutParams.MATCH_PARENT,
+                                    WindowManager.LayoutParams.MATCH_PARENT, true)
+                            pop.isTouchable = false
+                            pop.showAsDropDown(v)
                         }
                     }
 
