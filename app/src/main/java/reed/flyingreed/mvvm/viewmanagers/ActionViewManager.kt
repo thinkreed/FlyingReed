@@ -30,10 +30,11 @@ class ActionViewManager(val action: ((Model) -> Unit)?) : ViewManager<Model>() {
                         v.setOnClickListener {
                             val contentView = LayoutInflater.from(v.context)
                                     .inflate(R.layout.fragment_video_player, null)
-                            val pop = DragWindow(contentView,
+                            val pop = DragWindow(new, contentView,
                                     WindowManager.LayoutParams.MATCH_PARENT,
-                                    WindowManager.LayoutParams.MATCH_PARENT, true)
-                            pop.isTouchable = false
+                                    WindowManager.LayoutParams.MATCH_PARENT, false)
+                            pop.isTouchable = true
+                            pop.isOutsideTouchable = true
                             pop.showAsDropDown(v)
                         }
                     }
@@ -44,7 +45,7 @@ class ActionViewManager(val action: ((Model) -> Unit)?) : ViewManager<Model>() {
                         val ijkVideoView = view as IjkVideoView
                         val mediaController = MediaController(ijkVideoView.context)
                         mediaController.setAnchorView(ijkVideoView)
-                        ijkVideoView.setMediaController(mediaController)
+//                        ijkVideoView.setMediaController(mediaController)
                         ijkVideoView.setVideoPath(new.video.path)
                     }
                 }

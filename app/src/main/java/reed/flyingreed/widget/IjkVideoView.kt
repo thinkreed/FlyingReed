@@ -20,21 +20,21 @@ class IjkVideoView(context: Context, attrs: AttributeSet) : FrameLayout(context,
     private val mMediaPlayer = IjkMediaPlayer()
     private val mAttrs = attrs
     private var mBufferPercentage = -1
-    private lateinit var mMediaControllor: MediaController
+//    private lateinit var mMediaControllor: MediaController
     private var mState by Delegates.observable(State.IDLE) {
         property, oldValue, newValue ->
         when (newValue) {
             State.PLAYING -> {
                 mMediaPlayer.start()
-                mMediaControllor.show()
+//                mMediaControllor.show()
             }
             State.PAUSED -> {
                 mMediaPlayer.pause()
-                mMediaControllor.hide()
+//                mMediaControllor.hide()
             }
             State.IDLE -> {
                 mMediaPlayer.stop()
-                mMediaControllor.hide()
+//                mMediaControllor.hide()
             }
         }
     }
@@ -45,7 +45,7 @@ class IjkVideoView(context: Context, attrs: AttributeSet) : FrameLayout(context,
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
         mMediaPlayer.setOnPreparedListener {
             mMediaPlayer.start()
-            mMediaControllor.show()
+//            mMediaControllor.show()
         }
         mMediaPlayer.setOnBufferingUpdateListener { _, percentage ->
             mBufferPercentage = percentage
@@ -62,15 +62,12 @@ class IjkVideoView(context: Context, attrs: AttributeSet) : FrameLayout(context,
     override fun surfaceCreated(surface: Surface?) {
         if (surface != null) {
             mMediaPlayer.setSurface(surface)
-//            mMediaPlayer.prepareAsync()
+            mMediaPlayer.prepareAsync()
         }
     }
 
     override fun onDetachedFromWindow() {
-        mMediaPlayer.stop()
-        mMediaPlayer.reset()
-        mMediaPlayer.release()
-        mRenderView.removeSHCallback(this)
+        release()
         super.onDetachedFromWindow()
     }
 
@@ -123,14 +120,21 @@ class IjkVideoView(context: Context, attrs: AttributeSet) : FrameLayout(context,
         return super.onTouchEvent(event)
     }
 
-    fun setMediaController(mediaController: MediaController) {
-        mMediaControllor = mediaController
-        mMediaControllor.setMediaPlayer(this)
-        mMediaControllor.setAnchorView(this)
-    }
+//    fun setMediaController(mediaController: MediaController) {
+//        mMediaControllor = mediaController
+//        mMediaControllor.setMediaPlayer(this)
+//        mMediaControllor.setAnchorView(this)
+//    }
 
     fun setVideoPath(path: String) {
         mMediaPlayer.dataSource = path
+    }
+
+    fun release() {
+        mMediaPlayer.stop()
+        mMediaPlayer.reset()
+        mMediaPlayer.release()
+        mRenderView.removeSHCallback(this)
     }
 
     private fun initRenderView(renderType: RenderType): IRenderView {

@@ -2,19 +2,20 @@ package reed.flyingreed.widget
 
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Point
-import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.widget.PopupWindow
 import android.view.MotionEvent
 import android.support.v4.view.MotionEventCompat
 import android.view.WindowManager
+import kotlinx.android.synthetic.main.fragment_video_player.view.*
+import reed.flyingreed.model.Model
+
 
 /**
  * Created by thinkreed on 2017/7/30.
  */
-class DragWindow(contentView: View, width: Int, height: Int, focusable: Boolean)
+class DragWindow(model:Model, contentView: View, width: Int, height: Int, focusable: Boolean)
     : PopupWindow(contentView, width, height, focusable) {
 
     private lateinit var mDragLayout: DragLayout
@@ -23,8 +24,12 @@ class DragWindow(contentView: View, width: Int, height: Int, focusable: Boolean)
     private var mCurWidth = 0
     private var mCurHeight = 0
     private var mTotalDy = 0f
+    private val mVideoView:IjkVideoView by lazy {
+        contentView.video_player
+    }
 
     init {
+        mVideoView.setVideoPath(model.video.path)
         val wm = contentView.context
                 .getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val size = Point()
@@ -56,7 +61,6 @@ class DragWindow(contentView: View, width: Int, height: Int, focusable: Boolean)
             }
             return@setTouchInterceptor false
         }
-        setBackgroundDrawable(ColorDrawable(Color.RED))
     }
 
     override fun setContentView(contentView: View?) {

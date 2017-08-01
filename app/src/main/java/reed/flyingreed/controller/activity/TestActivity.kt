@@ -23,13 +23,13 @@ class TestActivity : AppCompatActivity() {
         setContentView(R.layout.fragment_empty)
         val contentView = LayoutInflater.from(this)
                 .inflate(R.layout.fragment_share, null)
-        val pop = DragWindow(contentView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true)
-        pop.isTouchable = true
-        pop.isOutsideTouchable = true
-        message.text = "test"
-        message.setOnClickListener {
-            //            pop.showAtLocation(pop.contentView, Gravity.NO_GRAVITY, 0, 0)
-            pop.showAsDropDown(message)
-        }
+//        val pop = DragWindow(contentView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true)
+//        pop.isTouchable = true
+//        pop.isOutsideTouchable = true
+//        message.text = "test"
+//        message.setOnClickListener {
+//            //            pop.showAtLocation(pop.contentView, Gravity.NO_GRAVITY, 0, 0)
+//            pop.showAsDropDown(message)
+//        }
     }
 }
