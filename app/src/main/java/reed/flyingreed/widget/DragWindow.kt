@@ -56,7 +56,6 @@ class DragWindow(model:Model, contentView: View, width: Int, height: Int, focusa
                     update(w, h)
                 }
                 MotionEvent.ACTION_CANCEL -> {
-
                 }
             }
             return@setTouchInterceptor false

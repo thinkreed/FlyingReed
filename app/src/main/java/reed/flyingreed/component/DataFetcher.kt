@@ -5,13 +5,14 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
-import com.squareup.moshi.Moshi
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
+import android.util.Log
 import reed.flyingreed.KotlinApplication
+import reed.flyingreed.apis.GitHubService
 import reed.flyingreed.model.*
-import reed.flyingreed.model.dtos.VideoInfo
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 
 /**
@@ -72,15 +73,23 @@ object DataFetcher {
                 { musicCursor -> ModelFactory.createModelFromMusicCursor(musicCursor) })
     }
 
-    private suspend fun getHttpData(uri: Uri) {
-        val client = OkHttpClient()
-        val request = Request.Builder().url(uri.toString()).build()
-        val response: Response? = client.newCall(request).execute()
-        val moshi = Moshi.Builder().build()
-        val jsonAdapter = moshi.adapter(VideoInfo::class.java)
-        val videoInfo = jsonAdapter.fromJson(response?.body()?.string())
-        val videos = videoInfo?.videos
-        response?.close()
+    suspend fun getHttpData() {
+        val retrofit = Retrofit.Builder()
+                .baseUrl("https://api.github.com/")
+                .addConverterFactory(MoshiConverterFactory.create())
+                .build()
+        val service = retrofit.create(GitHubService::class.java)
+        val result = service.listRepos("thinkreed")
+        result.enqueue(object : Callback<List<Repo>> {
+            override fun onResponse(call: Call<List<Repo>>?,
+                                    response: retrofit2.Response<List<Repo>>?) {
+                Log.d("thinkreed", response.toString())
+            }
+
+            override fun onFailure(call: Call<List<Repo>>?, t: Throwable?) {
+                Log.d("thinkreed", "fail")
+            }
+        })
     }
 
     private fun notifyDataArrived(models: MutableList<Model>) =

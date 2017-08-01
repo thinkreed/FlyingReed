@@ -2,6 +2,7 @@ package reed.flyingreed.controller.activity
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
@@ -9,8 +10,11 @@ import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.launch
 import reed.flyingreed.R
 import reed.flyingreed.algo.zigZag
+import reed.flyingreed.component.DataFetcher
 import reed.flyingreed.controller.fragment.EmptyFragment
 import reed.flyingreed.controller.fragment.ListFragment
 import reed.flyingreed.controller.fragment.LiveFragment
@@ -27,6 +31,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        launch(CommonPool) {
+            DataFetcher.getHttpData()
+        }
         checkPermission()
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
