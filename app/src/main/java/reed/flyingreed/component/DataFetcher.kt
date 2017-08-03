@@ -83,11 +83,14 @@ object DataFetcher {
         result.enqueue(object : Callback<List<Repo>> {
             override fun onResponse(call: Call<List<Repo>>?,
                                     response: retrofit2.Response<List<Repo>>?) {
-                Log.d("thinkreed", response.toString())
+                response?.body()?.map {
+                    repo ->
+                    Log.e("thinkreed", repo.name)
+                }
             }
 
             override fun onFailure(call: Call<List<Repo>>?, t: Throwable?) {
-                Log.d("thinkreed", "fail")
+                Log.e("thinkreed", "fail")
             }
         })
     }
