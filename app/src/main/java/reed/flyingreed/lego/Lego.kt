@@ -5,7 +5,7 @@ package reed.flyingreed.lego
  *
  * Act just like a tiny fragment.
  */
-interface Lego{
+interface Lego {
     /**
      * Called when this lego is to be initialized.
      */

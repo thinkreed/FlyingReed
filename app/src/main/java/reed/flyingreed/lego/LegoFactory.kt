@@ -1,8 +1,8 @@
 package reed.flyingreed.lego
 
 /**
- * Created by thinkreed on 2017/8/3.
+ * Created by thinkreed on 2017/8/4.
  */
 interface LegoFactory {
-    fun newLego():Lego
+    fun createLego(): Lego
 }
