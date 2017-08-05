@@ -9,6 +9,5 @@ import reed.flyingreed.lego.ViewGroupLego
 class EmptyFragmentLego(parentView: View) : ViewGroupLego(parentView) {
 
     override fun installLego() {
-        addLego(TextLego(mParentView))
     }
 }

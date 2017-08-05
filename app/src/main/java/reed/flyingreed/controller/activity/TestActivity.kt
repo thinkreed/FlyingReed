@@ -6,9 +6,13 @@ import android.widget.PopupWindow
 import kotlinx.android.synthetic.main.fragment_empty.*
 import reed.flyingreed.R
 import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.PixelFormat
 import android.graphics.drawable.BitmapDrawable
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.WindowManager.LayoutParams
+import android.widget.Button
 import reed.flyingreed.widget.DragWindow
 
 
@@ -21,15 +25,18 @@ class TestActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_empty)
-        val contentView = LayoutInflater.from(this)
-                .inflate(R.layout.fragment_share, null)
-//        val pop = DragWindow(contentView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true)
-//        pop.isTouchable = true
-//        pop.isOutsideTouchable = true
-//        message.text = "test"
-//        message.setOnClickListener {
-//            //            pop.showAtLocation(pop.contentView, Gravity.NO_GRAVITY, 0, 0)
-//            pop.showAsDropDown(message)
-//        }
+        message.text = "this is text activity"
+        val floatButton = Button(this)
+        floatButton.setTextColor(Color.WHITE)
+        floatButton.text = "float button"
+        val lp = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT,
+                LayoutParams.TYPE_APPLICATION, 0, PixelFormat.TRANSPARENT)
+        lp.token = window.decorView.applicationWindowToken
+        lp.flags = LayoutParams.FLAG_NOT_FOCUSABLE or LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                LayoutParams.FLAG_SHOW_WHEN_LOCKED
+        lp.gravity = Gravity.LEFT or Gravity.TOP
+        lp.x = 100
+        lp.y = 300
+        windowManager.addView(floatButton, lp)
     }
 }
