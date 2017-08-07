@@ -1,4 +1,4 @@
-package reed.flyingreed.designpattern
+package reed.flyingreed.designpattern.singleton
 
 /**
  * Created by thinkreed on 2017/8/6.
