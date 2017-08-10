@@ -30,7 +30,7 @@ class TestActivity : AppCompatActivity() {
         floatButton.setTextColor(Color.WHITE)
         floatButton.text = "float button"
         val lp = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT,
-                LayoutParams.TYPE_APPLICATION, 0, PixelFormat.TRANSPARENT)
+                LayoutParams.TYPE_APPLICATION_PANEL, 0, PixelFormat.TRANSPARENT)
         lp.token = window.decorView.applicationWindowToken
         lp.flags = LayoutParams.FLAG_NOT_FOCUSABLE or LayoutParams.FLAG_NOT_TOUCH_MODAL or
                 LayoutParams.FLAG_SHOW_WHEN_LOCKED
