@@ -12,7 +12,7 @@ android {
     resourcePrefix "refitshop_"
 
     defaultConfig {
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -52,6 +52,7 @@ dependencies {
     })
 
     implementation 'com.android.support:appcompat-v7:25.4.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.16'
     testImplementation 'junit:junit:4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }

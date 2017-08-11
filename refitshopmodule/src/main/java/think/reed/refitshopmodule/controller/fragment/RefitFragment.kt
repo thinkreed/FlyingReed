@@ -13,7 +13,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.launch
 import think.reed.refitshopmodule.R
+import think.reed.refitshopmodule.mediacodec.VideoCodec
 
 /**
  * Created by thinkreed on 2017/7/17.
@@ -27,6 +30,21 @@ class RefitFragment : Fragment() {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        launch(CommonPool) {
+            wrapperFun()
+        }
+    }
+
+    suspend private fun wrapperFun() {
+        doMediaDecode()
+    }
+
+    private fun doMediaDecode() {
+        VideoCodec().doDecodeMP4("/sdcard/video/dcw.mp4")
+    }
+
+    private fun doLocation() {
         if (ActivityCompat.checkSelfPermission(activity,
                 Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED) {
@@ -53,7 +71,6 @@ class RefitFragment : Fragment() {
 
 
         }
-
     }
 
     companion object {
