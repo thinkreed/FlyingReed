@@ -84,29 +84,27 @@ class VideoCodec {
     }
 
     private fun isAvailableFormat(mimeType: String): Boolean {
-        var result = false
         if (android.os.Build.VERSION.SDK_INT
                 < android.os.Build.VERSION_CODES.LOLLIPOP) {
             for (i in 0 until MediaCodecList.getCodecCount()) {
                 val codecInfo = MediaCodecList.getCodecInfoAt(i)
-                result = checkInfo(codecInfo, mimeType)
+                if (checkInfo(codecInfo, mimeType)) return true
             }
         } else {
             MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos.forEach {
                 codecInfo ->
-                result = checkInfo(codecInfo, mimeType)
+                if (checkInfo(codecInfo, mimeType)) return true
             }
         }
 
-        return result
+        return false
     }
 
     private fun checkInfo(codecInfo: MediaCodecInfo, mimeType: String): Boolean {
-        var result = false
         codecInfo.supportedTypes.forEach {
             type ->
-            if (type == mimeType) result = true
+            if (type == mimeType) return true
         }
-        return result
+        return false
     }
 }
