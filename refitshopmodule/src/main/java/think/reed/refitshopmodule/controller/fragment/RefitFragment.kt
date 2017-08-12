@@ -3,6 +3,7 @@ package think.reed.refitshopmodule.controller.fragment
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.SurfaceTexture
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -10,12 +11,12 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 import think.reed.refitshopmodule.R
+import think.reed.refitshopmodule.mediacodec.CodecRegistry
 import think.reed.refitshopmodule.mediacodec.VideoCodec
 
 /**
@@ -23,17 +24,38 @@ import think.reed.refitshopmodule.mediacodec.VideoCodec
  */
 class RefitFragment : Fragment() {
 
+    private lateinit var mJob :Job
+
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        return inflater?.inflate(R.layout.refitshop_fragment_wrapper, container, false)
+        val textureView = TextureView(activity)
+        textureView.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
+            override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?,
+                                                     width: Int, height: Int) {
+            }
+
+            override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) {
+            }
+
+            override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean {
+                mJob.cancel()
+                return true
+            }
+
+            override fun onSurfaceTextureAvailable(surface: SurfaceTexture?,
+                                                   width: Int, height: Int) {
+                CodecRegistry.registerComponent(CodecRegistry.KEY_SURFACE,
+                        Surface(surface))
+                mJob = launch(CommonPool) {
+                    wrapperFun()
+                }
+            }
+        }
+        return textureView
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        launch(CommonPool) {
-            wrapperFun()
-        }
     }
 
     suspend private fun wrapperFun() {
@@ -41,7 +63,9 @@ class RefitFragment : Fragment() {
     }
 
     private fun doMediaDecode() {
-        VideoCodec().doDecodeMP4("/sdcard/video/dcw.mp4")
+        val videoCodec = CodecRegistry.getComponent(CodecRegistry.KEY_VIDEO_CODEC) as VideoCodec
+        videoCodec.doDecodeMP4("/sdcard/video/dcw.mp4",
+                VideoCodec.ProcessMode.SYNC_WITH_SURFACE)
     }
 
     private fun doLocation() {
