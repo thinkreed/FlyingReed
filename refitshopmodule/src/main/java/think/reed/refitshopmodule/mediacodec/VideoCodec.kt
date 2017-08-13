@@ -3,6 +3,9 @@ package think.reed.refitshopmodule.mediacodec
 import android.media.*
 import android.view.Surface
 import java.nio.ByteBuffer
+import java.util.*
+import kotlin.concurrent.timer
+import kotlin.concurrent.timerTask
 
 /**
  * Created by thinkreed on 2017/8/11.
@@ -20,6 +23,11 @@ class VideoCodec {
     }
     private var outputDone = false
     private var inputDone = false
+    private var mFrameInterval = 0L
+    private val mTimer by lazy {
+        Timer(true)
+    }
+    private lateinit var mDecodeTask: TimerTask
 
     fun doDecodeMP4(path: String, processMode: ProcessMode) {
 
@@ -30,17 +38,19 @@ class VideoCodec {
             inputBuffers = mDecoder.inputBuffers
             outputBuffers = mDecoder.outputBuffers
         }
-        while (!outputDone) {
-            if (!inputDone) {
-                fillInputBuffer()
-            }
-            if (!outputDone) {
-                processOutputBuffer(processMode)
-            }
+        mTimer.schedule(mDecodeTask, 0, mFrameInterval)
+        if (outputDone) {
+            resetVideoCodec()
         }
+    }
 
-        resetVideoCodec()
-
+    private fun doDecode(processMode: ProcessMode) {
+        if (!inputDone) {
+            fillInputBuffer()
+        }
+        if (!outputDone) {
+            processOutputBuffer(processMode)
+        }
     }
 
     private fun resetVideoCodec() {
@@ -58,6 +68,7 @@ class VideoCodec {
             if (!isAvailableFormat(mime)) return false
             if (mime.startsWith("video/")) {
                 mExtractor.selectTrack(i)
+                mFrameInterval = 1000L / format.getInteger(MediaFormat.KEY_FRAME_RATE)
                 mDecoder = MediaCodec.createDecoderByType(mime)
                 when (processMode) {
                     ProcessMode.SYNC_WITH_SURFACE -> {
@@ -69,6 +80,7 @@ class VideoCodec {
                         mDecoder.configure(format, null, null, 0)
                     }
                 }
+                mDecodeTask = timerTask { doDecode(processMode) }
                 mDecoder.start()
                 return true
             }
