@@ -2,7 +2,7 @@
 package reed.flyingreed;
 
 // Declare any non-default types here with import statements
-import reed.flyingreed.model.Model;
+import reed.flyingreed.common.model.Model;
 
 interface IPlayerService {
     /**

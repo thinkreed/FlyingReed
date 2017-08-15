@@ -1,6 +1,6 @@
 package reed.flyingreed.apis
 
-import reed.flyingreed.model.Repo
+import reed.flyingreed.common.model.Repo
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path

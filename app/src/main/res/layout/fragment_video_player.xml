@@ -7,7 +7,7 @@
     android:background="@color/colorCyan"
     android:orientation="vertical">
 
-    <reed.flyingreed.widget.IjkVideoView
+    <reed.flyingreed.common.widget.IjkVideoView
         android:id="@+id/video_player"
         android:layout_width="0dp"
         android:layout_height="0dp"

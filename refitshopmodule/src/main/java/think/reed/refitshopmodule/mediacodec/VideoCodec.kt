@@ -4,7 +4,6 @@ import android.media.*
 import android.view.Surface
 import java.nio.ByteBuffer
 import java.util.*
-import kotlin.concurrent.timer
 import kotlin.concurrent.timerTask
 
 /**

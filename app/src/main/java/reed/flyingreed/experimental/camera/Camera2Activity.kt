@@ -1,7 +1,7 @@
 package reed.flyingreed.experimental.camera
 
 import android.support.v4.app.Fragment
-import reed.flyingreed.controller.activity.FragmentActivity
+import reed.flyingreed.common.activity.FragmentActivity
 
 /**
  * Created by thinkreed on 2017/7/27.

@@ -34,11 +34,11 @@
             android:name="UMENG_APPKEY"
             android:value="5959c9302ae85b63e0000d4f"></meta-data>
         <meta-data
-            android:name="reed.flyingreed.widget.ReedAppModule"
+            android:name="reed.flyingreed.common.widget.ReedAppModule"
             android:value="AppGlideModule" />
 
         <activity
-            android:name=".controller.activity.MainActivity"
+            android:name=".common.activity.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
 
@@ -49,14 +49,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".controller.activity.MusicPlayerActivity"
+            android:name=".music.activity.MusicPlayerActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
 
-        <service android:name=".controller.services.PlayerService" />
+        <service android:name=".common.services.PlayerService" />
 
         <activity
-            android:name=".controller.activity.ShareActivity"
+            android:name=".music.activity.ShareActivity"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait" />
         <activity
@@ -95,13 +95,13 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-            android:name=".controller.activity.WebActivity"
+            android:name=".common.activity.WebActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".controller.activity.DemoGLES20Activity">
+        <activity android:name=".common.activity.DemoGLES20Activity">
 
         </activity>
         <activity android:name=".experimental.camera.Camera2Activity" />
-        <activity android:name=".controller.activity.TestActivity">
+        <activity android:name=".common.activity.TestActivity">
 
         </activity>
     </application>

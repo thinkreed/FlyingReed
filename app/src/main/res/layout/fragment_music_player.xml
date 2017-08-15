@@ -36,7 +36,7 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.75" />
 
-    <reed.flyingreed.widget.PlayPauseProgress
+    <reed.flyingreed.common.widget.PlayPauseProgress
         android:id="@+id/progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
