@@ -6,7 +6,7 @@ import android.support.v4.view.MotionEventCompat
 import android.view.GestureDetector
 import android.view.MotionEvent
 import org.greenrobot.eventbus.EventBus
-import reed.flyingreed.common.mvvm.Events.FlingEvents
+import reed.flyingreed.common.presenter.Events.FlingEvents
 
 /**
  * Created by thinkreed on 2017/7/1.

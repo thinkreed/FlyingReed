@@ -1,4 +1,4 @@
-package reed.flyingreed.common.mvvm.Events
+package reed.flyingreed.common.presenter.Events
 
 import kotlin.reflect.KClass
 

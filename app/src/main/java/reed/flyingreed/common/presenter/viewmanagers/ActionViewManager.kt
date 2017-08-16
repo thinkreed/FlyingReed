@@ -1,11 +1,11 @@
-package reed.flyingreed.common.mvvm.viewmanagers
+package reed.flyingreed.common.presenter.viewmanagers
 
 import android.view.LayoutInflater
 import android.view.WindowManager
 import android.widget.MediaController
 import reed.flyingreed.R
 import reed.flyingreed.common.model.Model
-import reed.flyingreed.common.mvvm.ViewManager
+import reed.flyingreed.common.presenter.ViewManager
 import reed.flyingreed.common.widget.DragWindow
 import reed.flyingreed.common.widget.IjkVideoView
 

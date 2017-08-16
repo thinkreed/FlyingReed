@@ -1,4 +1,4 @@
-package reed.flyingreed.common.mvvm.viewmanagers
+package reed.flyingreed.common.presenter.viewmanagers
 
 import android.widget.ImageView
 import android.widget.TextView
@@ -6,7 +6,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import reed.flyingreed.R
 import reed.flyingreed.common.model.Model
-import reed.flyingreed.common.mvvm.ViewManager
+import reed.flyingreed.common.presenter.ViewManager
 
 /**
  * Created by thinkreed on 2017/6/17.

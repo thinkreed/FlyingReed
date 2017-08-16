@@ -11,30 +11,30 @@ import org.greenrobot.eventbus.ThreadMode
 import reed.flyingreed.R
 import reed.flyingreed.common.model.Const
 import reed.flyingreed.common.model.Model
-import reed.flyingreed.common.mvvm.Events.FlingEvents
-import reed.flyingreed.common.mvvm.ViewModel
-import reed.flyingreed.common.mvvm.viewmanagers.ActionViewManager
-import reed.flyingreed.common.mvvm.viewmodels.VideoPlayerViewModel
+import reed.flyingreed.common.presenter.Events.FlingEvents
+import reed.flyingreed.common.presenter.ViewGroupManager
+import reed.flyingreed.common.presenter.viewmanagers.ActionViewManager
+import reed.flyingreed.common.presenter.viewmodels.VideoPlayerViewGroupManager
 
 /**
  * Created by thinkreed on 2017/7/6.
  */
 class VideoPlayerFragment : Fragment() {
 
-    private lateinit var mViewModel: ViewModel<Model>
+    private lateinit var mViewGroupManager: ViewGroupManager<Model>
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        mViewModel = VideoPlayerViewModel(container,
+        mViewGroupManager = VideoPlayerViewGroupManager(container,
                 R.layout.fragment_video_player, Model())
                 .add(R.id.video_player, ActionViewManager(null))
-        return mViewModel.rootView
+        return mViewGroupManager.rootView
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         EventBus.getDefault().register(this)
-        mViewModel.model = arguments.getParcelable(Const.KEY_MODEL)
+        mViewGroupManager.model = arguments.getParcelable(Const.KEY_MODEL)
     }
 
     override fun onResume() {

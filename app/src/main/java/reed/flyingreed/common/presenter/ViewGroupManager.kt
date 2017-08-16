@@ -1,4 +1,4 @@
-package reed.flyingreed.common.mvvm
+package reed.flyingreed.common.presenter
 
 import android.util.SparseArray
 import android.view.LayoutInflater
@@ -10,7 +10,7 @@ import kotlin.properties.Delegates
  * Created by thinkreed on 2017/6/19.
  */
 
-abstract class ViewModel<T>(parent: ViewGroup?, layout: Int, defaultValue: T) {
+abstract class ViewGroupManager<T>(parent: ViewGroup?, layout: Int, defaultValue: T) {
 
     val rootView: View by lazy {
         LayoutInflater.from(parent?.context).inflate(layout, parent, false)
@@ -49,7 +49,7 @@ abstract class ViewModel<T>(parent: ViewGroup?, layout: Int, defaultValue: T) {
 
     }
 
-    fun add(id: Int, viewManager: ViewManager<T>): ViewModel<T> {
+    fun add(id: Int, viewManager: ViewManager<T>): ViewGroupManager<T> {
         children.put(id, viewManager)
         return this
     }

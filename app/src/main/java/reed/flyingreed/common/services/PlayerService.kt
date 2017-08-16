@@ -13,7 +13,7 @@ import reed.flyingreed.IPlayerService
 import reed.flyingreed.common.component.DataFetcher
 import reed.flyingreed.common.component.Observer
 import reed.flyingreed.common.model.Model
-import reed.flyingreed.common.mvvm.Events.MediaChangeEvent
+import reed.flyingreed.common.presenter.Events.MediaChangeEvent
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
 
 

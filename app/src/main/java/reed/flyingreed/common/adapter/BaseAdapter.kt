@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import reed.flyingreed.common.component.DataFetcher
 import reed.flyingreed.common.component.Observer
 import reed.flyingreed.common.model.ViewHolder
-import reed.flyingreed.common.mvvm.ViewModel
+import reed.flyingreed.common.presenter.ViewGroupManager
 
 
 /**
@@ -26,10 +26,10 @@ abstract class BaseAdapter<T> : RecyclerView.Adapter<ViewHolder<T>>(), Observer 
     }
 
     override fun onBindViewHolder(holder: ViewHolder<T>?, position: Int) {
-        holder?.viewModel?.model = data[position]
+        holder?.viewGroupManager?.model = data[position]
     }
 
-    abstract fun onCreateViewModel(parent: ViewGroup?, viewType: Int): ViewModel<T>
+    abstract fun onCreateViewModel(parent: ViewGroup?, viewType: Int): ViewGroupManager<T>
 
     override fun getItemCount(): Int {
         return data.size

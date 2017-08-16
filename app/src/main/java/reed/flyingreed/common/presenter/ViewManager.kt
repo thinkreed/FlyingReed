@@ -1,4 +1,4 @@
-package reed.flyingreed.common.mvvm
+package reed.flyingreed.common.presenter
 
 import android.view.View
 

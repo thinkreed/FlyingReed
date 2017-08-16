@@ -22,8 +22,8 @@ import reed.flyingreed.common.model.Const
 import reed.flyingreed.common.model.Week
 import reed.flyingreed.music.activity.MusicPlayerActivity
 import reed.flyingreed.music.activity.ShareActivity
-import reed.flyingreed.common.mvvm.Events.FlingEvents
-import reed.flyingreed.common.mvvm.Events.MediaChangeEvent
+import reed.flyingreed.common.presenter.Events.FlingEvents
+import reed.flyingreed.common.presenter.Events.MediaChangeEvent
 import reed.flyingreed.common.widget.PlayPauseProgress
 
 /**
