@@ -8,6 +8,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import think.reed.refitshopmodule.R
 import think.reed.refitshopmodule.controller.fragment.RefitFragment
+import think.reed.refitshopmodule.mediacodec.TsExtractor
 
 /**
  * Created by thinkreed on 2017/7/17.
@@ -18,12 +19,13 @@ class WrapperActivity :AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.refitshop_activity_single_fragment)
         checkPermission()
-        var fragment = supportFragmentManager.findFragmentById(R.id.container)
-
-        if (fragment == null) {
-            fragment = RefitFragment.getInstance()
-            supportFragmentManager.beginTransaction().add(R.id.container, fragment).commit()
-        }
+//        var fragment = supportFragmentManager.findFragmentById(R.id.container)
+//
+//        if (fragment == null) {
+//            fragment = RefitFragment.getInstance()
+//            supportFragmentManager.beginTransaction().add(R.id.container, fragment).commit()
+//        }
+        TsExtractor().extractor("/sdcard/ts/playlist0.ts")
     }
 
     private fun checkPermission() {
