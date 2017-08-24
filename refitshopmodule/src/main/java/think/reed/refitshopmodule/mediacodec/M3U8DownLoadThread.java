@@ -14,6 +14,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class M3U8DownLoadThread extends Thread {
 
@@ -25,10 +26,10 @@ public class M3U8DownLoadThread extends Thread {
     private String m3u8URL = "http://open.ls.qingting.fm/live/1140/64k.m3u8";
     private List<String> mBufferPathList = new ArrayList<String>();
     private List<String> mDownLoadedList = new ArrayList<String>();
-    private ArrayList<String> mFileList;
+    private CopyOnWriteArrayList<String> mFileList;
     private static final String pathHead = Environment.getExternalStorageDirectory().getPath();
 
-    public M3U8DownLoadThread(ArrayList<String> fileList) {
+    public M3U8DownLoadThread(CopyOnWriteArrayList<String> fileList) {
         mFileList = fileList;
     }
 
