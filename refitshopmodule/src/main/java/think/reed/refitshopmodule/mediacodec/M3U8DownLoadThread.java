@@ -3,6 +3,8 @@ package think.reed.refitshopmodule.mediacodec;
 import android.os.Environment;
 import android.util.Log;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -140,9 +142,9 @@ public class M3U8DownLoadThread extends Thread {
                     count++;
                     if (!mBufferPathList.contains(str) && !mDownLoadedList.contains(str)) {
                         mBufferPathList.add(str);
-                        Log.i("test", "add + " + str);
+                        Log.i("thinkreed", "add + " + str);
                     } else {
-                        Log.w("test", "重复 + " + str);
+                        Log.w("thinkreed", "重复 + " + str);
                     }
                 }
             }
@@ -159,6 +161,7 @@ public class M3U8DownLoadThread extends Thread {
             while(isDownloadStatus && mFileList.size() > 2) {
                 try {
                     Thread.sleep(300);
+                    EventBus.getDefault().post(new BufferReadyEvent());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

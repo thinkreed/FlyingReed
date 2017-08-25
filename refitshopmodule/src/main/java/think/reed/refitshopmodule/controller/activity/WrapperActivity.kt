@@ -9,9 +9,15 @@ import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import think.reed.refitshopmodule.R
+import think.reed.refitshopmodule.mediacodec.BufferReadyEvent
 import think.reed.refitshopmodule.mediacodec.M3U8DownLoadThread
 import think.reed.refitshopmodule.mediacodec.MultiExtractorCodec
+import think.reed.refitshopmodule.mediacodec.PlayThread
 import java.util.concurrent.CopyOnWriteArrayList
 
 
@@ -19,6 +25,8 @@ import java.util.concurrent.CopyOnWriteArrayList
  * Created by thinkreed on 2017/7/17.
  */
 class WrapperActivity : AppCompatActivity() {
+
+    private lateinit var playThread:PlayThread
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,21 +38,33 @@ class WrapperActivity : AppCompatActivity() {
 //            fragment = RefitFragment.getInstance()
 //            supportFragmentManager.beginTransaction().add(R.id.container, fragment).commit()
 //        }
+        EventBus.getDefault().register(this)
+        startDecode()
+    }
 
+    override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onBufferReadyEvent(bufferReadyEvent: BufferReadyEvent) {
+        Log.d("thinkreed", "buffer ready")
+        playThread.play()
     }
 
     private fun startDecode() {
         val musicList = CopyOnWriteArrayList<String>()
         val downloader = M3U8DownLoadThread(musicList)
         val multiDecoder = MultiExtractorCodec(musicList)
+        val audioMinBufSizeLocal = AudioTrack.getMinBufferSize(multiDecoder.sampleRate,
+                multiDecoder.channelConfig, AudioFormat.ENCODING_PCM_16BIT)
+        val audio = AudioTrack(AudioManager.STREAM_MUSIC, multiDecoder.sampleRate, multiDecoder.channelConfig,
+                AudioFormat.ENCODING_PCM_16BIT, audioMinBufSizeLocal * 2, AudioTrack.MODE_STREAM)
+        playThread = PlayThread(audio, multiDecoder)
+        playThread.start()
         downloader.start()
         downloader.startDownloadSong()
-        var audioMinBufSizeLocal = AudioTrack.getMinBufferSize(32000,
-                AudioFormat.CHANNEL_OUT_STEREO, AudioFormat.ENCODING_PCM_16BIT)
-        audioMinBufSizeLocal *= 2
-        val audio = AudioTrack(AudioManager.STREAM_MUSIC, 32000, AudioFormat.CHANNEL_OUT_STEREO,
-                AudioFormat.ENCODING_PCM_16BIT, audioMinBufSizeLocal, AudioTrack.MODE_STREAM)
-        audio.play()
     }
 
     private fun checkPermission() {
