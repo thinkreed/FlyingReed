@@ -1,5 +1,6 @@
 package think.reed.refitshopmodule.mediacodec;
 
+import android.media.AudioFormat;
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
@@ -9,6 +10,7 @@ import android.util.SparseArray;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * multi extractor codec, smooth switch tiny media files
@@ -37,8 +39,49 @@ public class MultiExtractorCodec {
 
     private ByteBuffer[] mOutputBuffers;
 
-    public MultiExtractorCodec() {
+    private String mMime = "";
+
+    private int mChannelConfig = AudioFormat.CHANNEL_OUT_STEREO;
+
+    private MediaFormat mMediaFormat;
+
+    private int mSampleRate = 32000;
+
+    private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
+
+    public MultiExtractorCodec(CopyOnWriteArrayList<String> bufferList) {
         initExtractors();
+        mPathList = bufferList;
+        init();
+    }
+
+    public String getMime() {
+        return mMime;
+    }
+
+    public int getChannelConfig() {
+        return mChannelConfig;
+    }
+
+    public int getSampleRate() {
+        return mSampleRate;
+    }
+
+    public void getAudioData() {
+        switch (fillInputBuffer()) {
+            case ERROR_DEQUEUE_INPUT:
+                break;
+            case ERROR_TRACK_INDEX:
+                break;
+            case ERROR_END_OF_STREAM:
+                configCodec(switchExtractor());
+                break;
+        }
+            processOutputBuffer();
+    }
+
+    private boolean init() {
+        return configCodec(switchExtractor()) != null;
     }
 
     private void initExtractors() {
@@ -97,7 +140,13 @@ public class MultiExtractorCodec {
         for (int i = 0; i < extractor.getTrackCount(); i++) {
             MediaFormat format = extractor.getTrackFormat(i);
             String mime = format.getString(MediaFormat.KEY_MIME);
-            if (mime.startsWith("audio/")) return i;
+            if (mime.startsWith("audio/")) {
+                mMime = mime;
+                mMediaFormat = format;
+                mChannelConfig = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
+                mSampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+                return i;
+            }
         }
         return ERROR_TRACK_INDEX;
     }
@@ -133,4 +182,20 @@ public class MultiExtractorCodec {
         return ERROR_DEQUEUE_INPUT;
     }
 
+    private boolean processOutputBuffer() {
+        int outputBufferId = mDecoder.dequeueOutputBuffer(mInfo, 10000);
+        if (outputBufferId > 0) {
+            if ((mInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+                return true;
+            }
+            mDecoder.releaseOutputBuffer(outputBufferId, true);
+        } else if (outputBufferId == MediaCodec.INFO_TRY_AGAIN_LATER) {
+
+        } else if (outputBufferId == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+            mOutputBuffers = mDecoder.getOutputBuffers();
+        } else if (outputBufferId == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+            mMediaFormat = mDecoder.getOutputFormat();
+        }
+        return false;
+    }
 }

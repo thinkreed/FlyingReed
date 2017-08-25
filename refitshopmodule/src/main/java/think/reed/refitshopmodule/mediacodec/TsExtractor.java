@@ -17,10 +17,10 @@ public class TsExtractor {
     private SparseIntArray programs = new SparseIntArray();
     private SparseIntArray channels = new SparseIntArray();
 
-    public void extractor(String path) {
+    public void extractor(String datah) {
         programs.clear();
         try {
-            RandomAccessFile ra = new RandomAccessFile(path, "rw");
+            RandomAccessFile ra = new RandomAccessFile(datah, "rw");
             byte[] packetBuf = new byte[188];
             ByteBuffer byteBuffer;
 
@@ -56,8 +56,8 @@ public class TsExtractor {
                     parsePAT(byteBuffer);
                 } else if (programs.get(pid) != 0) {
                     parsePMT(byteBuffer);
-                } else if (channels.get(pid) != 0) {
-
+                } else if (channels.get(pid, -1) != -1) {
+                    parsePES(channels.get(pid), byteBuffer);
                 }
             }
         } catch (FileNotFoundException fnfe) {
@@ -68,25 +68,59 @@ public class TsExtractor {
 
     }
 
+    private void fix172Video(ByteBuffer data) {
+
+    }
+
+    private void fix818Video(ByteBuffer data) {
+
+    }
+
+    private void fix172Audio(ByteBuffer data) {
+
+    }
+
+    private void fix818Audio(ByteBuffer data) {
+
+    }
+
+    private void parsePES(int streamType, ByteBuffer data) {
+        switch (streamType) {
+            case 0x01://iso/iec 11172 video
+                fix172Video(data);
+                break;
+            case 0x02://13818-2 video
+                fix818Video(data);
+                break;
+            case 0x03://11172 audio
+                fix172Audio(data);
+                break;
+            case 0x04://13818-3 audio
+                fix818Audio(data);
+                break;
+            default:
+                break;
+        }
+    }
+
     private void parsePMT(ByteBuffer data) {
-        byte[] pat = data.array();
-        int tableId = pat[0];
+        int tableId = data.get(0);
         if (tableId != 0x02) {
             return;
         }
-        int sectionLength = (pat[1] & 0x0f) << 8 | pat[2];
-        int programNum = pat[3] << 8 | pat[4];
-        int pcrPid = (pat[8] << 8 | pat[9]) & 0x1fff;
-        int programInfoLength = (pat[10] & 0x0f) << 8 | pat[11];
+        int sectionLength = (data.get(1) & 0x0f) << 8 | data.get(2);
+        int programNum = data.get(3) << 8 | data.get(4);
+        int pcrPid = (data.get(8) << 8 | data.get(9)) & 0x1fff;
+        int programInfoLength = (data.get(10) & 0x0f) << 8 | data.get(11);
 
         int pos = 12;
         if (programInfoLength != 0) {
             pos += programInfoLength;
         }
         for (; pos < sectionLength + 2 - 4; ) {
-            int streamType = pat[pos];
-            int elePID = ((pat[pos + 1] << 8) | pat[pos + 2]) & 0x1fff;
-            int esInfoLength = (pat[pos + 3] & 0x0f) << 8 | pat[pos + 4];
+            int streamType = data.get(pos);
+            int elePID = ((data.get(pos + 1 << 8) | data.get(pos + 2))) & 0x1fff;
+            int esInfoLength = (data.get(pos + 3) & 0x0f) << 8 | data.get(pos + 4);
             if (esInfoLength != 0) {
                 pos += esInfoLength;
             }
@@ -96,21 +130,21 @@ public class TsExtractor {
     }
 
     private void parsePAT(ByteBuffer data) {
-        byte[] pat = data.array();
-        int tableId = pat[0];
+        int off = data.position();
+        int tableId = data.get(off);
         if (tableId != 0x00) {
             return;
         }
-        int sectionSyntaxIndicator = pat[1] >> 7;
-        int sectionLength = (pat[1] & 0x0f) << 8 | pat[2];
-        int streamId = pat[3] << 8 | pat[4];
-        int currentOrNext = pat[5] & 0x01;
+        int sectionSyntaxIndicator = data.get(off + 1) >> 7;
+        int sectionLength = (data.get(off + 1) & 0x0f) << 8 | data.get(off + 2);
+        int streamId = data.get(off + 3) << 8 | data.get(off + 4);
+        int currentOrNext = data.get(off + 5) & 0x01;
         for (int i = 0; i < sectionLength - 12; i += 4) {
-            int programNum = pat[8 + i] << 8 | pat[11 + i];
+            int programNum = data.get(off + 8 + i) << 8 | data.get(off + 11 + i);
             if (programNum == 0) {
 
             } else {
-                programs.put(pat[10 + i] << 8 | pat[11 + i], programNum);
+                programs.put(data.get(off + 10 + i) << 8 | data.get(off + 11 + i), programNum);
             }
         }
     }
