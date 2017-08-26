@@ -47,7 +47,7 @@ class WrapperActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe
     fun onBufferReadyEvent(bufferReadyEvent: BufferReadyEvent) {
         Log.d("thinkreed", "buffer ready")
         playThread.play()

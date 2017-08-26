@@ -4,10 +4,10 @@ import android.media.AudioFormat;
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -22,9 +22,7 @@ public class MultiExtractorCodec {
 
     private List<String> mPathList;
 
-    private int mCurIndex = -1;
-
-    private int trackIndex = -1;
+    private int mCurIndex = 0;
 
     private SparseArray<MediaExtractor> mExtractors = new SparseArray<>();
 
@@ -44,13 +42,18 @@ public class MultiExtractorCodec {
 
     private byte[] mBuf;
 
+    private boolean mIsNeedSwitch = false;
+
+    private FileInputStream mWorkFile;
+
+    private MediaExtractor mCurExtractor;
+
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
     public MultiExtractorCodec(CopyOnWriteArrayList<String> bufferList) {
         initExtractors();
         mPathList = bufferList;
         mBuf = new byte[1024 * 20];
-        init();
     }
 
     public String getMime() {
@@ -66,25 +69,29 @@ public class MultiExtractorCodec {
     }
 
     public int getAudioData(Pair p, int pos) {
+
+        if (mPathList.size() < 2) {
+            return -1;
+        }
+
+        if (mDecoder == null) {
+            mCurExtractor = getExtractor();
+            configExtractor(mCurExtractor);
+            if (configCodec() < 0) {
+                return -1;
+            }
+
+        }
+
         p.setData(mBuf);
         p.setSize(0);
-        switch (fillInputBuffer()) {
-            case ERROR_DEQUEUE_INPUT:
-                break;
-            case ERROR_TRACK_INDEX:
-                break;
-            case ERROR_END_OF_STREAM:
-                mPathList.remove(0);
-                if (configCodec(switchExtractor()) == null) {
-                    return ERROR_TRACK_INDEX;
-                }
-                break;
+
+        int ret = fillInputBuffer();
+
+        if (ret < 0) {
+            return -1;
         }
         return processOutputBuffer(p, pos);
-    }
-
-    private boolean init() {
-        return configCodec(switchExtractor()) != null;
     }
 
     private void initExtractors() {
@@ -93,81 +100,79 @@ public class MultiExtractorCodec {
         }
     }
 
-    @Nullable
-    private MediaExtractor switchExtractor() {
+    private int configExtractor(MediaExtractor extractor) {
         try {
-            mCurIndex = (mCurIndex + 1) % mExtractors.size();
-            MediaExtractor extractor = mExtractors.get(mCurIndex);
-            if (mPathList.size() < 2) {
-                return null;
-            }
             extractor.setDataSource(mPathList.get(0));
-            trackIndex = selectAudioTrack(extractor);
-            return trackIndex == -1 ? null : extractor;
-        } catch (NullPointerException e) {
-            return null;
-        } catch (IndexOutOfBoundsException e) {
-            return null;
+            return selectAudioTrack(extractor);
         } catch (IOException e) {
-            return null;
+            Log.d("thinkreed", "io exception");
+            return -1;
         }
-
     }
 
-    private int configCodec(MediaExtractor extractor) {
-        if (extractor == null) {
-            return null;
-        }
+    private void switchExtractor() {
+        Log.d("thinkreed", "switch extractor");
+//        mCurIndex = (mCurIndex + 1) % mExtractors.size();
+//        mCurExtractor = getExtractor();
+        configExtractor(mCurExtractor);
+    }
 
-        MediaFormat format = extractor.getTrackFormat(trackIndex);
+    private int configCodec() {
+
 
         if (mDecoder == null) {
-            String mime = format.getString(MediaFormat.KEY_MIME);
-            if (mime == null) {
-                return null;
+            if (mMime == null) {
+                return -1;
             }
             try {
-                mDecoder = MediaCodec.createDecoderByType(mime);
+                mDecoder = MediaCodec.createDecoderByType(mMime);
             } catch (IOException e) {
-                return null;
+                return -1;
             }
         }
 
-        mDecoder.configure(format, null, null, 0);
+        mDecoder.stop();
+
+        Log.d("thinkreed", "the format is " + mMediaFormat);
+        mDecoder.configure(mMediaFormat, null, null, 0);
         mDecoder.start();
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {
             mInputBuffers = mDecoder.getInputBuffers();
             mOutputBuffers = mDecoder.getOutputBuffers();
         }
-        return mDecoder;
+        return 0;
     }
 
-    private ErrorCode selectAudioTrack(MediaExtractor extractor) {
+    private int selectAudioTrack(MediaExtractor extractor) {
+        Log.d("thinkreed", "select track");
         for (int i = 0; i < extractor.getTrackCount(); i++) {
             MediaFormat format = extractor.getTrackFormat(i);
             String mime = format.getString(MediaFormat.KEY_MIME);
+            Log.e("thinkreed", "the mime is " + mime);
             if (mime.startsWith("audio/")) {
+                Log.d("thinkreed", "find audio track " + mime);
                 mMime = mime;
                 mMediaFormat = format;
                 mChannelConfig = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
                 mSampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+                extractor.selectTrack(i);
                 return i;
             }
         }
-        return ErrorCode.ERROR_AUDIO_NOT_FOUND;
+        return -1;
     }
 
     private MediaExtractor getExtractor() {
         return mExtractors.get(mCurIndex);
     }
 
-    private ErrorCode fillInputBuffer() {
+    private int fillInputBuffer() {
         if (mDecoder == null) {
             Log.d("thinkreed", "int output decoder is null");
-            return ErrorCode.ERROR_NULL_CODEC;
+            return -1;
         }
         int inputBufferId = mDecoder.dequeueInputBuffer(10000);
-        if (inputBufferId > 0) {
+        if (inputBufferId >= 0) {
             ByteBuffer destBuffer;
             if (android.os.Build.VERSION.SDK_INT
                     < android.os.Build.VERSION_CODES.LOLLIPOP) {
@@ -175,30 +180,38 @@ public class MultiExtractorCodec {
             } else {
                 destBuffer = mDecoder.getInputBuffer(inputBufferId);
             }
-            MediaExtractor extractor = getExtractor();
-            int chunkSize = extractor.readSampleData(destBuffer, 0);
+            if (destBuffer == null) {
+                return -1;
+            }
+            int chunkSize = mCurExtractor.readSampleData(destBuffer, 0);
             if (chunkSize < 0) {
-                mDecoder.queueInputBuffer(inputBufferId, 0, 0,
-                        0, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
-                return ErrorCode.ERROR_END_OF_INPUT_STREAM;
+                mIsNeedSwitch = true;
             } else {
-                long presentationTimeUs = extractor.getSampleTime();
+                long presentationTimeUs = mCurExtractor.getSampleTime();
                 mDecoder.queueInputBuffer(inputBufferId, 0, chunkSize,
                         presentationTimeUs, 0);
-                extractor.advance();
-                return ErrorCode.SUCCESS;
+                mCurExtractor.advance();
             }
+
+            return 0;
+        } else if (mIsNeedSwitch) {
+            Log.d("thinkreed", "input buffer id is " + inputBufferId);
+            
+            mPathList.remove(0);
+            switchExtractor();
+            return -1;
         }
         Log.d("thinkreed", "last ,error -5");
-        return ErrorCode.ERROR_DEQUE_INPUT;
+        return -1;
     }
 
-    private ErrorCode processOutputBuffer(Pair p, int pos) {
+    private int processOutputBuffer(Pair p, int pos) {
         if (mDecoder == null) {
-            return ErrorCode.ERROR_NULL_CODEC;
+            return -1;
         }
+        int dataSize = 0;
         int outputBufferId = mDecoder.dequeueOutputBuffer(mInfo, 10000);
-        if (outputBufferId > 0) {
+        if (outputBufferId >= 0) {
             ByteBuffer byteBuffer;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                 byteBuffer = mDecoder.getOutputBuffer(outputBufferId);
@@ -211,31 +224,25 @@ public class MultiExtractorCodec {
                 p.setData(mBuf);
             }
             if (byteBuffer == null) {
-                return ErrorCode.ERROR_DEQUE_OUTPUT;
+                return -1;
             }
             byteBuffer.get(mBuf, pos, bufLen);
             byteBuffer.clear();
+            mDecoder.releaseOutputBuffer(outputBufferId, false);
 
             if (bufLen > 0) {
                 p.setSize(bufLen);
-            }
-            mDecoder.releaseOutputBuffer(outputBufferId, true);
-            if ((mInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                return ErrorCode.ERROR_END_OF_OUT_STREAM;
+                dataSize = bufLen;
             }
         } else if (outputBufferId == MediaCodec.INFO_TRY_AGAIN_LATER) {
-
+            Log.d("thinkreed", "try again");
         } else if (outputBufferId == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+            Log.d("thinkreed", "buffer change");
             mOutputBuffers = mDecoder.getOutputBuffers();
         } else if (outputBufferId == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-            mMediaFormat = mDecoder.getOutputFormat();
+            Log.d("thinkreed", "format change");
+            MediaFormat format = mDecoder.getOutputFormat();
         }
-        return ErrorCode.SUCCESS;
-    }
-
-    public enum ErrorCode {
-        SUCCESS, ERROR_NULL_EXTRACTOR, ERROR_NULL_CODEC, ERROR_END_OF_OUT_STREAM,
-        ERROR_END_OF_INPUT_STREAM, ERROR_DEQUE_OUTPUT, ERROR_DEQUE_INPUT,
-        ERROR_AUDIO_NOT_FOUND
+        return dataSize;
     }
 }

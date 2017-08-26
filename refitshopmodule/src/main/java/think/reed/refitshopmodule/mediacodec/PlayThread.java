@@ -25,33 +25,21 @@ public class PlayThread extends Thread {
     @Override
     public void run() {
         while (true) {
+            Log.d("thinkreed", "before play check");
             playCheck();
             int dataSize = mDecoder.getAudioData(p, 12);
             Log.d("thinkreed", "data size is " + dataSize);
-            switch (dataSize) {
-                case MultiExtractorCodec.ERROR_DEQUEUE_INPUT:
-                    break;
-                case MultiExtractorCodec.ERROR_DEQUEUE_OUTPUT:
-                    break;
-                case MultiExtractorCodec.ERROR_END_OF_OUT_STREAM:
-                    break;
-                case MultiExtractorCodec.ERROR_END_OF_STREAM:
-                    break;
-                case MultiExtractorCodec.ERROR_TRACK_INDEX:
-                    synchronized (mPlayLock) {
-                        try {
-                            mPlayLock.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+            if (dataSize < 0) {
+                synchronized (mPlayLock) {
+                    try {
+                        mPlayLock.wait();
+                    }catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                    break;
-                default:
-                    if (p.getSize() > 0) {
-                        mAudioTrack.write(p.getData(), 12, p.getSize());
-                    }
-                    break;
+                }
             }
+
+            mAudioTrack.write(p.getData(), 12, dataSize);
         }
     }
 
@@ -71,9 +59,10 @@ public class PlayThread extends Thread {
         if (mAudioTrack != null && mAudioTrack.getPlayState() != AudioTrack.PLAYSTATE_PLAYING) {
             mAudioTrack.play();
             Log.d("thinkreed", "play invoked");
-            synchronized (mPlayLock) {
-                mPlayLock.notify();
-            }
+        }
+        synchronized (mPlayLock) {
+            Log.d("thinkreed", "play notify");
+            mPlayLock.notify();
         }
     }
 }

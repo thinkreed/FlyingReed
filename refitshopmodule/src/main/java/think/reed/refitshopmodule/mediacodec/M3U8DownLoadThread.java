@@ -24,10 +24,9 @@ public class M3U8DownLoadThread extends Thread {
 
     private boolean isDownloadStatus = false;
     private boolean isStartDownload = false;
-//    private String m3u8URL = "http://ls.qingting.fm/live/386.m3u8";
-    private String m3u8URL = "http://open.ls.qingting.fm/live/1140/64k.m3u8";
-    private List<String> mBufferPathList = new ArrayList<String>();
-    private List<String> mDownLoadedList = new ArrayList<String>();
+    private String m3u8URL = "http://live.xmcdn.com/live/252/64.m3u8?transcode=ts";
+    private List<String> mBufferPathList = new ArrayList<>();
+    private List<String> mDownLoadedList = new ArrayList<>();
     private CopyOnWriteArrayList<String> mFileList;
     private static final String pathHead = Environment.getExternalStorageDirectory().getPath();
 
@@ -37,10 +36,9 @@ public class M3U8DownLoadThread extends Thread {
 
     @Override
     public void run() {
-        // TODO Auto-generated method stub
         while (mBufferPathList != null) {
             if (isStartDownload) {
-                File file = new File(pathHead + "/thinkreed");
+                File file = new File(pathHead + "/fm");
                 if (!file.exists()) {
                     file.mkdir();
                 }
@@ -56,7 +54,7 @@ public class M3U8DownLoadThread extends Thread {
                             mBufferPathList.remove(0);
                             fileName++;
                         }
-                        if (mBufferPathList.size() < 2) {
+                        if (mBufferPathList.size() < 4) {
                             downloadM3U8(m3u8URL);
                         }
                     }
@@ -64,7 +62,7 @@ public class M3U8DownLoadThread extends Thread {
                     mDownLoadedList.clear();
                     mFileList.clear();
                     File[] files = file.listFiles();
-                    for (File file0: files) {
+                    for (File file0 : files) {
                         file0.delete();
                     }
                 }
@@ -88,8 +86,24 @@ public class M3U8DownLoadThread extends Thread {
     }
 
     public void startDownloadSong(String path) {
-        m3u8URL = path;
+        m3u8URL = checkPath(path);
         isStartDownload = true;
+    }
+
+    private String checkPath(String urlPath) {
+        if (!urlPath.startsWith("http")) {
+            urlPath = "http:" + urlPath;
+        }
+//        if (urlPath.contains("transcode=ts")) {
+//            urlPath = urlPath.replace("transcode=ts", "transcode=aac");
+//        }
+        return urlPath;
+    }
+
+    private String resolvePath(String url, String fileName) {
+        int index = url.lastIndexOf(".");
+        String suffix = url.substring(index);
+        return pathHead + "/fm/" + fileName + suffix;
     }
 
     private void downloadM3U8(String urlPath) {
@@ -98,7 +112,7 @@ public class M3U8DownLoadThread extends Thread {
 
         isDownloadStatus = true;
         HttpURLConnection conn;
-        String savePath = pathHead + "/thinkreed/test.m3u8";
+        String savePath = resolvePath(urlPath, "test");
         try {
             url = new URL(urlPath);
             conn = (HttpURLConnection) url.openConnection();
@@ -135,33 +149,25 @@ public class M3U8DownLoadThread extends Thread {
             String str;
             int count = 0;
             while ((str = bufferedReader.readLine()) != null) {    //如果之前文件为空，则不执行输出
-                if (str.startsWith("#")) {
-                    System.out.println(str);
-                    continue;
-                } else {
+                if (!str.startsWith("#")) {
                     count++;
-                    if (!mBufferPathList.contains(str) && !mDownLoadedList.contains(str)) {
-                        mBufferPathList.add(str);
-                        Log.i("thinkreed", "add + " + str);
-                    } else {
-                        Log.w("thinkreed", "重复 + " + str);
-                    }
+//                    if (!mBufferPathList.contains(str) && !mDownLoadedList.contains(str)) {
+//                        mBufferPathList.add(checkPath(str));
+//                        Log.i("thinkreed", "add + " + str);
+//                    } else {
+//                        Log.w("thinkreed", "重复 + " + str);
+//                    }
+                    mBufferPathList.add(checkPath(str));
                 }
             }
-            if (mDownLoadedList.size() > count) {
-                int deleteCount = mDownLoadedList.size() - count;
-                for (int i = 0; i < deleteCount; i++) {
-                    mDownLoadedList.remove(0);
-                }
+            if (mDownLoadedList.size() > 5) {
+                mDownLoadedList.remove(0);
             }
 
-            if (downLoadBytes > 0) {
-            }
-
-            while(isDownloadStatus && mFileList.size() > 2) {
+            while (isDownloadStatus && mFileList.size() > 4) {
                 try {
-                    Thread.sleep(300);
                     EventBus.getDefault().post(new BufferReadyEvent());
+                    Thread.sleep(300);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -177,8 +183,7 @@ public class M3U8DownLoadThread extends Thread {
     private void downloadSimpleSong(String songUrl, int fileName) {
         URL url;
 
-        String path = "http:" + songUrl;
-        String savePath = pathHead + "/thinkreed/" + fileName + ".aac";
+        String savePath = resolvePath(songUrl, String.valueOf(fileName));
         File file = new File(savePath);
         if (file.exists()) {
             file.delete();
@@ -187,7 +192,7 @@ public class M3U8DownLoadThread extends Thread {
         isDownloadStatus = true;
         HttpURLConnection conn;
         try {
-            url = new URL(path);
+            url = new URL(songUrl);
             conn = (HttpURLConnection) url.openConnection();
             conn.setConnectTimeout(5000);
             conn.setRequestMethod("GET");
@@ -215,16 +220,15 @@ public class M3U8DownLoadThread extends Thread {
                 saveFile.close();
                 inStream.close();
                 if (downLoadBytes >= totalSize) {
+                    Log.i("thinkreed", savePath + "下载完成");
                 }
             }
             if (downLoadBytes > 0) {
-                // TODO: 上报流量数据，还要区分是否wifi，是否radioSong
                 mFileList.add(savePath);
             }
         } catch (SocketTimeoutException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
