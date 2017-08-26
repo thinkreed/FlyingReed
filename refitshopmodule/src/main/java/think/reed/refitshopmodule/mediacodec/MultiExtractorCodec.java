@@ -20,16 +20,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MultiExtractorCodec {
 
-    public static final int ERROR_TRACK_INDEX = -1;
-
-    public static final int ERROR_END_OF_STREAM = -2;
-
-    public static final int ERROR_DEQUEUE_INPUT = -3;
-
-    public static final int ERROR_END_OF_OUT_STREAM = -4;
-
-    public static final int ERROR_DEQUEUE_OUTPUT = -5;
-
     private List<String> mPathList;
 
     private int mCurIndex = -1;
@@ -124,7 +114,7 @@ public class MultiExtractorCodec {
 
     }
 
-    private MediaCodec configCodec(MediaExtractor extractor) {
+    private int configCodec(MediaExtractor extractor) {
         if (extractor == null) {
             return null;
         }
@@ -152,7 +142,7 @@ public class MultiExtractorCodec {
         return mDecoder;
     }
 
-    private int selectAudioTrack(MediaExtractor extractor) {
+    private ErrorCode selectAudioTrack(MediaExtractor extractor) {
         for (int i = 0; i < extractor.getTrackCount(); i++) {
             MediaFormat format = extractor.getTrackFormat(i);
             String mime = format.getString(MediaFormat.KEY_MIME);
@@ -164,17 +154,17 @@ public class MultiExtractorCodec {
                 return i;
             }
         }
-        return ERROR_TRACK_INDEX;
+        return ErrorCode.ERROR_AUDIO_NOT_FOUND;
     }
 
     private MediaExtractor getExtractor() {
         return mExtractors.get(mCurIndex);
     }
 
-    private int fillInputBuffer() {
+    private ErrorCode fillInputBuffer() {
         if (mDecoder == null) {
             Log.d("thinkreed", "int output decoder is null");
-            return ERROR_TRACK_INDEX;
+            return ErrorCode.ERROR_NULL_CODEC;
         }
         int inputBufferId = mDecoder.dequeueInputBuffer(10000);
         if (inputBufferId > 0) {
@@ -190,24 +180,23 @@ public class MultiExtractorCodec {
             if (chunkSize < 0) {
                 mDecoder.queueInputBuffer(inputBufferId, 0, 0,
                         0, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
-                return ERROR_END_OF_STREAM;
+                return ErrorCode.ERROR_END_OF_INPUT_STREAM;
             } else {
                 long presentationTimeUs = extractor.getSampleTime();
                 mDecoder.queueInputBuffer(inputBufferId, 0, chunkSize,
                         presentationTimeUs, 0);
                 extractor.advance();
-                return chunkSize;
+                return ErrorCode.SUCCESS;
             }
         }
         Log.d("thinkreed", "last ,error -5");
-        return ERROR_DEQUEUE_INPUT;
+        return ErrorCode.ERROR_DEQUE_INPUT;
     }
 
-    private int processOutputBuffer(Pair p, int pos) {
+    private ErrorCode processOutputBuffer(Pair p, int pos) {
         if (mDecoder == null) {
-            return ERROR_DEQUEUE_OUTPUT;
+            return ErrorCode.ERROR_NULL_CODEC;
         }
-        int dataSize = 0;
         int outputBufferId = mDecoder.dequeueOutputBuffer(mInfo, 10000);
         if (outputBufferId > 0) {
             ByteBuffer byteBuffer;
@@ -222,18 +211,17 @@ public class MultiExtractorCodec {
                 p.setData(mBuf);
             }
             if (byteBuffer == null) {
-                return ERROR_DEQUEUE_OUTPUT;
+                return ErrorCode.ERROR_DEQUE_OUTPUT;
             }
             byteBuffer.get(mBuf, pos, bufLen);
             byteBuffer.clear();
 
             if (bufLen > 0) {
                 p.setSize(bufLen);
-                dataSize = bufLen;
             }
             mDecoder.releaseOutputBuffer(outputBufferId, true);
             if ((mInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                return ERROR_END_OF_OUT_STREAM;
+                return ErrorCode.ERROR_END_OF_OUT_STREAM;
             }
         } else if (outputBufferId == MediaCodec.INFO_TRY_AGAIN_LATER) {
 
@@ -242,6 +230,12 @@ public class MultiExtractorCodec {
         } else if (outputBufferId == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
             mMediaFormat = mDecoder.getOutputFormat();
         }
-        return dataSize;
+        return ErrorCode.SUCCESS;
+    }
+
+    public enum ErrorCode {
+        SUCCESS, ERROR_NULL_EXTRACTOR, ERROR_NULL_CODEC, ERROR_END_OF_OUT_STREAM,
+        ERROR_END_OF_INPUT_STREAM, ERROR_DEQUE_OUTPUT, ERROR_DEQUE_INPUT,
+        ERROR_AUDIO_NOT_FOUND
     }
 }
