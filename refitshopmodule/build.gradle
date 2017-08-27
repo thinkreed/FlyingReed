@@ -4,36 +4,32 @@ if (isDebug.toBoolean()) {
     apply plugin: 'com.android.library'
 }
 
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
 android {
-    compileSdkVersion 25
-    buildToolsVersion "26.0.0"
-
-
-    resourcePrefix "refitshop_"
-
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
     defaultConfig {
+        applicationId "think.reed.tinyplayer"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
-
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
+        externalNativeBuild {
+            cmake {
+                cppFlags "-frtti -fexceptions"
+            }
+        }
     }
     buildTypes {
         release {
-            //混淆
-            minifyEnabled true
-            //zipAlign
-            zipAlignEnabled true
-            //shrink
-            shrinkResources true
-            //前一部分是系统默认的混淆配置，后一部分是自定义的
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
     sourceSets {
         main {
             if (isDebug.toBoolean()) {
@@ -43,21 +39,24 @@ android {
             }
         }
     }
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-
-    implementation 'com.android.support:appcompat-v7:25.4.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.16'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation 'com.android.support:appcompat-v7:26.0.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     testImplementation 'junit:junit:4.12'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    androidTestImplementation 'com.android.support.test:runner:1.0.0'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.0'
+    //coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.16'
+    //eventbus
     implementation 'org.greenrobot:eventbus:3.0.0'
-}
-apply plugin: 'kotlin-android'
-repositories {
-    mavenCentral()
+
 }
