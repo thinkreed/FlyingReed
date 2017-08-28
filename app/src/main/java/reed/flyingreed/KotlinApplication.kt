@@ -1,5 +1,6 @@
 package reed.flyingreed;
 
+import com.qihoo360.replugin.RePlugin
 import com.qihoo360.replugin.RePluginApplication
 import com.squareup.leakcanary.LeakCanary
 import com.tencent.bugly.crashreport.CrashReport
@@ -26,6 +27,7 @@ class KotlinApplication : RePluginApplication() {
         Config.DEBUG = true
         PlatformConfig.setQQZone("1106185635", "5f8Hpw2HCTbupIT7")
         UMShareAPI.get(this)
+        RePlugin.install("/sdcard/video/app-debug.apk")
     }
 
 
