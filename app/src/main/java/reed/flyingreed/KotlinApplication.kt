@@ -1,6 +1,6 @@
 package reed.flyingreed;
 
-import android.app.Application
+import com.qihoo360.replugin.RePluginApplication
 import com.squareup.leakcanary.LeakCanary
 import com.tencent.bugly.crashreport.CrashReport
 import com.umeng.socialize.Config
@@ -11,7 +11,7 @@ import com.umeng.socialize.UMShareAPI
  * Created by thinkreed on 2017/6/18.
  */
 
-class KotlinApplication : Application() {
+class KotlinApplication : RePluginApplication() {
 
     override fun onCreate() {
         super.onCreate()
