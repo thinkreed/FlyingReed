@@ -25,7 +25,7 @@ class TestActivity : AppCompatActivity() {
         message.text = "this is text activity"
         message.setOnClickListener {
             val intent = RePlugin.createIntent(
-                    "player", "think.reed.tinyplayer.TinyPlayerEntryActivity")
+                    RePlugin.getPluginInfoList()[0].name, "think.reed.tinyplayer.TinyPlayerEntryActivity")
             val result = RePlugin.startActivity(this@TestActivity, intent)
             Log.e("thinkreed", "start activity " + result)
         }
