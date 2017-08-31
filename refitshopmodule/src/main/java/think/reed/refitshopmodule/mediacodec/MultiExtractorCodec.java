@@ -1,17 +1,18 @@
 package think.reed.refitshopmodule.mediacodec;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import android.media.AudioFormat;
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.util.Log;
 import android.util.SparseArray;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * multi extractor codec, smooth switch tiny media files
@@ -106,14 +107,16 @@ public class MultiExtractorCodec {
             return selectAudioTrack(extractor);
         } catch (IOException e) {
             Log.d("thinkreed", "io exception");
+            e.printStackTrace();
             return -1;
         }
     }
 
     private void switchExtractor() {
         Log.d("thinkreed", "switch extractor");
-//        mCurIndex = (mCurIndex + 1) % mExtractors.size();
-//        mCurExtractor = getExtractor();
+        mCurExtractor.release();
+        mCurExtractor = null;
+        mCurExtractor = new MediaExtractor();
         configExtractor(mCurExtractor);
     }
 
@@ -196,9 +199,13 @@ public class MultiExtractorCodec {
             return 0;
         } else if (mIsNeedSwitch) {
             Log.d("thinkreed", "input buffer id is " + inputBufferId);
-            
+
+            File file = new File(mPathList.get(0));
+            if (file.exists()) file.delete();
             mPathList.remove(0);
             switchExtractor();
+            configCodec();
+            mIsNeedSwitch = false;
             return -1;
         }
         Log.d("thinkreed", "last ,error -5");

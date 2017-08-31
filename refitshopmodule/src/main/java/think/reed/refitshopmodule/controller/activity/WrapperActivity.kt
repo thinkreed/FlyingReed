@@ -40,6 +40,7 @@ class WrapperActivity : AppCompatActivity() {
 //        }
         text.text = stringFromJNI()
         EventBus.getDefault().register(this)
+        startDecode()
     }
 
     override fun onDestroy() {
