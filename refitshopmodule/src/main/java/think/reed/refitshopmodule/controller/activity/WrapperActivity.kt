@@ -58,10 +58,8 @@ class WrapperActivity : AppCompatActivity() {
         val musicList = CopyOnWriteArrayList<String>()
         val downloader = M3U8DownLoadThread(musicList)
         val multiDecoder = MultiExtractorCodec(musicList)
-        val audioMinBufSizeLocal = AudioTrack.getMinBufferSize(multiDecoder.sampleRate,
-                multiDecoder.channelConfig, AudioFormat.ENCODING_PCM_16BIT)
-        val audio = AudioTrack(AudioManager.STREAM_MUSIC, multiDecoder.sampleRate, multiDecoder.channelConfig,
-                AudioFormat.ENCODING_PCM_16BIT, audioMinBufSizeLocal * 2, AudioTrack.MODE_STREAM)
+        val audioMinBufSizeLocal = multiDecoder.switcher.curComponent.audioMinBufSizeLocal
+        val audio =
         playThread = PlayThread(audio, multiDecoder)
         playThread.start()
         downloader.start()

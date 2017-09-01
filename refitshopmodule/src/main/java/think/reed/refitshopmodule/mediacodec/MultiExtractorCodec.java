@@ -1,18 +1,11 @@
 package think.reed.refitshopmodule.mediacodec;
 
-import android.media.AudioFormat;
+import java.nio.ByteBuffer;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import android.media.MediaCodec;
-import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.util.Log;
-import android.util.SparseArray;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * multi extractor codec, smooth switch tiny media files
@@ -27,20 +20,18 @@ public class MultiExtractorCodec {
 
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
+    private CodecSwitcher mSwitcher;
+
     public MultiExtractorCodec(CopyOnWriteArrayList<String> bufferList) {
-        mPathList = bufferList;
+        mSwitcher = new CodecSwitcher(bufferList);
         mBuf = new byte[1024 * 20];
     }
 
+    public CodecSwitcher getSwitcher() {
+        return mSwitcher;
+    }
+
     public int getAudioData(Pair p, int pos) {
-
-        if (mPathList.size() < 2) {
-            return -1;
-        }
-
-        if (mDecoder == null) {
-
-        }
 
         p.setData(mBuf);
         p.setSize(0);
@@ -54,41 +45,36 @@ public class MultiExtractorCodec {
     }
 
     private int fillInputBuffer() {
-        if (mDecoder == null) {
+        if (mSwitcher.getCurComponent().getMediaCodec() == null) {
             Log.d("thinkreed", "int output decoder is null");
             return -1;
         }
-        int inputBufferId = mDecoder.dequeueInputBuffer(10000);
+        int inputBufferId = mSwitcher.getCurComponent().getMediaCodec().dequeueInputBuffer(10000);
         if (inputBufferId >= 0) {
             ByteBuffer destBuffer;
             if (android.os.Build.VERSION.SDK_INT
                     < android.os.Build.VERSION_CODES.LOLLIPOP) {
-                destBuffer = mInputBuffers[inputBufferId];
+                destBuffer = mSwitcher.getCurComponent().getInputBuffers()[inputBufferId];
             } else {
-                destBuffer = mDecoder.getInputBuffer(inputBufferId);
+                destBuffer = mSwitcher.getCurComponent().getMediaCodec().getInputBuffer(inputBufferId);
             }
             if (destBuffer == null) {
                 return -1;
             }
-            int chunkSize = mCurExtractor.readSampleData(destBuffer, 0);
+            int chunkSize = mSwitcher.getCurComponent().getExtractor().readSampleData(destBuffer, 0);
             if (chunkSize < 0) {
                 mIsNeedSwitch = true;
             } else {
-                long presentationTimeUs = mCurExtractor.getSampleTime();
-                mDecoder.queueInputBuffer(inputBufferId, 0, chunkSize,
+                long presentationTimeUs = mSwitcher.getCurComponent().getExtractor().getSampleTime();
+                mSwitcher.getCurComponent().getMediaCodec().queueInputBuffer(inputBufferId, 0, chunkSize,
                         presentationTimeUs, 0);
-                mCurExtractor.advance();
+                mSwitcher.getCurComponent().getExtractor().advance();
             }
 
             return 0;
         } else if (mIsNeedSwitch) {
             Log.d("thinkreed", "input buffer id is " + inputBufferId);
-
-            File file = new File(mPathList.get(0));
-            if (file.exists()) file.delete();
-            mPathList.remove(0);
-            switchExtractor();
-            configCodec();
+            mSwitcher.switchCodecComponent();
             mIsNeedSwitch = false;
             return -1;
         }
@@ -97,17 +83,17 @@ public class MultiExtractorCodec {
     }
 
     private int processOutputBuffer(Pair p, int pos) {
-        if (mDecoder == null) {
+        if (mSwitcher.getCurComponent().getMediaCodec() == null) {
             return -1;
         }
         int dataSize = 0;
-        int outputBufferId = mDecoder.dequeueOutputBuffer(mInfo, 10000);
+        int outputBufferId = mSwitcher.getCurComponent().getMediaCodec().dequeueOutputBuffer(mInfo, 10000);
         if (outputBufferId >= 0) {
             ByteBuffer byteBuffer;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                byteBuffer = mDecoder.getOutputBuffer(outputBufferId);
+                byteBuffer = mSwitcher.getCurComponent().getMediaCodec().getOutputBuffer(outputBufferId);
             } else {
-                byteBuffer = mOutputBuffers[outputBufferId];
+                byteBuffer = mSwitcher.getCurComponent().getOutputBuffers()[outputBufferId];
             }
             int bufLen = mInfo.size;
             if (mBuf.length < bufLen + pos) {
@@ -119,7 +105,7 @@ public class MultiExtractorCodec {
             }
             byteBuffer.get(mBuf, pos, bufLen);
             byteBuffer.clear();
-            mDecoder.releaseOutputBuffer(outputBufferId, false);
+            mSwitcher.getCurComponent().getMediaCodec().releaseOutputBuffer(outputBufferId, false);
 
             if (bufLen > 0) {
                 p.setSize(bufLen);
@@ -129,10 +115,10 @@ public class MultiExtractorCodec {
             Log.d("thinkreed", "try again");
         } else if (outputBufferId == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
             Log.d("thinkreed", "buffer change");
-            mOutputBuffers = mDecoder.getOutputBuffers();
+            mSwitcher.getCurComponent().getMediaCodec().getOutputBuffers();
         } else if (outputBufferId == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
             Log.d("thinkreed", "format change");
-            MediaFormat format = mDecoder.getOutputFormat();
+            MediaFormat format = mSwitcher.getCurComponent().getMediaCodec().getOutputFormat();
         }
         return dataSize;
     }
