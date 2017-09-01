@@ -1,18 +1,18 @@
 package think.reed.refitshopmodule.mediacodec;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import android.media.AudioFormat;
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.util.Log;
 import android.util.SparseArray;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * multi extractor codec, smooth switch tiny media files
@@ -21,52 +21,15 @@ import android.util.SparseArray;
 
 public class MultiExtractorCodec {
 
-    private List<String> mPathList;
-
-    private int mCurIndex = 0;
-
-    private SparseArray<MediaExtractor> mExtractors = new SparseArray<>();
-
-    private MediaCodec mDecoder;
-
-    private ByteBuffer[] mInputBuffers;
-
-    private ByteBuffer[] mOutputBuffers;
-
-    private String mMime = "";
-
-    private int mChannelConfig = AudioFormat.CHANNEL_OUT_STEREO;
-
-    private MediaFormat mMediaFormat;
-
-    private int mSampleRate = 32000;
-
     private byte[] mBuf;
 
     private boolean mIsNeedSwitch = false;
 
-    private FileInputStream mWorkFile;
-
-    private MediaExtractor mCurExtractor;
-
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
     public MultiExtractorCodec(CopyOnWriteArrayList<String> bufferList) {
-        initExtractors();
         mPathList = bufferList;
         mBuf = new byte[1024 * 20];
-    }
-
-    public String getMime() {
-        return mMime;
-    }
-
-    public int getChannelConfig() {
-        return mChannelConfig;
-    }
-
-    public int getSampleRate() {
-        return mSampleRate;
     }
 
     public int getAudioData(Pair p, int pos) {
@@ -76,11 +39,6 @@ public class MultiExtractorCodec {
         }
 
         if (mDecoder == null) {
-            mCurExtractor = getExtractor();
-            configExtractor(mCurExtractor);
-            if (configCodec() < 0) {
-                return -1;
-            }
 
         }
 
@@ -93,80 +51,6 @@ public class MultiExtractorCodec {
             return -1;
         }
         return processOutputBuffer(p, pos);
-    }
-
-    private void initExtractors() {
-        for (int i = 0; i < 2; i++) {
-            mExtractors.put(i, new MediaExtractor());
-        }
-    }
-
-    private int configExtractor(MediaExtractor extractor) {
-        try {
-            extractor.setDataSource(mPathList.get(0));
-            return selectAudioTrack(extractor);
-        } catch (IOException e) {
-            Log.d("thinkreed", "io exception");
-            e.printStackTrace();
-            return -1;
-        }
-    }
-
-    private void switchExtractor() {
-        Log.d("thinkreed", "switch extractor");
-        mCurExtractor.release();
-        mCurExtractor = null;
-        mCurExtractor = new MediaExtractor();
-        configExtractor(mCurExtractor);
-    }
-
-    private int configCodec() {
-
-
-        if (mDecoder == null) {
-            if (mMime == null) {
-                return -1;
-            }
-            try {
-                mDecoder = MediaCodec.createDecoderByType(mMime);
-            } catch (IOException e) {
-                return -1;
-            }
-        }
-
-        mDecoder.stop();
-
-        Log.d("thinkreed", "the format is " + mMediaFormat);
-        mDecoder.configure(mMediaFormat, null, null, 0);
-        mDecoder.start();
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {
-            mInputBuffers = mDecoder.getInputBuffers();
-            mOutputBuffers = mDecoder.getOutputBuffers();
-        }
-        return 0;
-    }
-
-    private int selectAudioTrack(MediaExtractor extractor) {
-        Log.d("thinkreed", "select track");
-        for (int i = 0; i < extractor.getTrackCount(); i++) {
-            MediaFormat format = extractor.getTrackFormat(i);
-            String mime = format.getString(MediaFormat.KEY_MIME);
-            Log.e("thinkreed", "the mime is " + mime);
-            if (mime.startsWith("audio/")) {
-                Log.d("thinkreed", "find audio track " + mime);
-                mMime = mime;
-                mMediaFormat = format;
-                mChannelConfig = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
-                mSampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
-                extractor.selectTrack(i);
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    private MediaExtractor getExtractor() {
-        return mExtractors.get(mCurIndex);
     }
 
     private int fillInputBuffer() {
