@@ -2,9 +2,6 @@ package think.reed.refitshopmodule.controller.activity
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.media.AudioFormat
-import android.media.AudioManager
-import android.media.AudioTrack
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
@@ -26,7 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList
  */
 class WrapperActivity : AppCompatActivity() {
 
-    private lateinit var playThread:PlayThread
+    private lateinit var playThread: PlayThread
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,8 +55,7 @@ class WrapperActivity : AppCompatActivity() {
         val musicList = CopyOnWriteArrayList<String>()
         val downloader = M3U8DownLoadThread(musicList)
         val multiDecoder = MultiExtractorCodec(musicList)
-        val audioMinBufSizeLocal = multiDecoder.switcher.curComponent.audioMinBufSizeLocal
-        val audio =
+        val audio = multiDecoder.switcher.curComponent.audioTrack
         playThread = PlayThread(audio, multiDecoder)
         playThread.start()
         downloader.start()
@@ -81,7 +77,7 @@ class WrapperActivity : AppCompatActivity() {
         }
     }
 
-    external fun stringFromJNI():String
+    external fun stringFromJNI(): String
 
     companion object {
         init {

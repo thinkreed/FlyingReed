@@ -1,14 +1,14 @@
 package think.reed.refitshopmodule.mediacodec;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /**
  * Created by thinkreed on 2017/9/1.
@@ -17,7 +17,10 @@ import android.media.MediaFormat;
 public class CodecComponent {
 
     private MediaCodec mediaCodec;
+
     private MediaExtractor extractor;
+
+    private AudioTrack audioTrack;
 
     private String mMime = "";
 
@@ -43,11 +46,15 @@ public class CodecComponent {
         return mediaCodec;
     }
 
-    public AudioTrack getAudioMinBufSizeLocal() {
-        return AudioTrack.getMinBufferSize(mSampleRate,
-                mChannelConfig, AudioFormat.ENCODING_PCM_16BIT);
-        return AudioTrack(AudioManager.STREAM_MUSIC, multiDecoder.sampleRate, multiDecoder.channelConfig,
-                AudioFormat.ENCODING_PCM_16BIT, audioMinBufSizeLocal * 2, AudioTrack.MODE_STREAM)
+    public AudioTrack getAudioTrack() {
+        if (audioTrack == null) {
+            int audioMinBufSizeLocal = AudioTrack.getMinBufferSize(mSampleRate,
+                    mChannelConfig, AudioFormat.ENCODING_PCM_16BIT);
+            audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, mSampleRate, mChannelConfig,
+                    AudioFormat.ENCODING_PCM_16BIT, audioMinBufSizeLocal * 2,
+                    AudioTrack.MODE_STREAM);
+        }
+        return audioTrack;
     }
 
     public MediaExtractor getExtractor() {
