@@ -15,7 +15,7 @@
         android:gravity="center"
         android:padding="16dp"
         android:src="@drawable/droll"
-        app:layout_constraintBottom_toTopOf="@id/tuesday"
+        app:layout_constraintBottom_toTopOf="@+id/tuesday"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -27,7 +27,7 @@
         android:gravity="center"
         android:src="@drawable/sad"
         android:padding="16dp"
-        app:layout_constraintBottom_toTopOf="@id/wednesday"
+        app:layout_constraintBottom_toTopOf="@+id/wednesday"
         app:layout_constraintStart_toStartOf="@id/monday"
         app:layout_constraintTop_toBottomOf="@id/monday" />
 
@@ -38,7 +38,7 @@
         android:gravity="center"
         android:padding="16dp"
         android:src="@drawable/blind"
-        app:layout_constraintBottom_toTopOf="@id/thursday"
+        app:layout_constraintBottom_toTopOf="@+id/thursday"
         app:layout_constraintStart_toStartOf="@id/monday"
         app:layout_constraintTop_toBottomOf="@id/tuesday" />
 
@@ -50,7 +50,7 @@
         android:src="@drawable/happy"
         android:padding="16dp"
         app:layout_constraintStart_toStartOf="@id/monday"
-        app:layout_constraintBottom_toTopOf="@id/friday"
+        app:layout_constraintBottom_toTopOf="@+id/friday"
         app:layout_constraintTop_toBottomOf="@id/wednesday" />
 
     <ImageView
