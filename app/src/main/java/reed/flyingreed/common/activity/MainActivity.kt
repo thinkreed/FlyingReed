@@ -8,10 +8,7 @@ import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.launch
 import reed.flyingreed.R
-import reed.flyingreed.common.component.DataFetcher
 import reed.flyingreed.common.fragment.ListFragment
 import reed.flyingreed.live.LiveFragment
 import reed.flyingreed.music.MusicFragment
@@ -27,9 +24,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        launch(CommonPool) {
-            DataFetcher.getHttpData()
-        }
         checkPermission()
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)

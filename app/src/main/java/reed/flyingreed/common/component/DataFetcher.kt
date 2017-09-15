@@ -5,14 +5,8 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
-import android.util.Log
 import reed.flyingreed.KotlinApplication
-import reed.flyingreed.apis.GitHubService
-import reed.flyingreed.common.model.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import reed.flyingreed.common.model.Model
 
 
 /**
@@ -71,28 +65,6 @@ object DataFetcher {
                 null, MediaStore.Audio.Media.TITLE + " ASC")
         return getModelsFromCursor(cursor,
                 { musicCursor -> ModelFactory.createModelFromMusicCursor(musicCursor) })
-    }
-
-    suspend fun getHttpData() {
-        val retrofit = Retrofit.Builder()
-                .baseUrl("https://api.github.com/")
-                .addConverterFactory(MoshiConverterFactory.create())
-                .build()
-        val service = retrofit.create(GitHubService::class.java)
-        val result = service.listRepos("thinkreed")
-        result.enqueue(object : Callback<List<Repo>> {
-            override fun onResponse(call: Call<List<Repo>>?,
-                                    response: retrofit2.Response<List<Repo>>?) {
-                response?.body()?.map {
-                    repo ->
-                    Log.e("thinkreed", repo.name)
-                }
-            }
-
-            override fun onFailure(call: Call<List<Repo>>?, t: Throwable?) {
-                Log.e("thinkreed", "fail")
-            }
-        })
     }
 
     private fun notifyDataArrived(models: MutableList<Model>) =
