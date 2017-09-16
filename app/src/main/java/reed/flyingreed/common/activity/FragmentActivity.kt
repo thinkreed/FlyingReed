@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import reed.flyingreed.R
+import reed.flyingreed.R.id
 
 /**
  * Created by thinkreed on 2017/6/17.
@@ -11,17 +12,19 @@ import reed.flyingreed.R
 
 abstract class FragmentActivity : AppCompatActivity() {
 
-    abstract fun getFragment(): Fragment
+  abstract fun getFragment(): Fragment
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_single_fragment)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_single_fragment)
 
-        var fragment = supportFragmentManager.findFragmentById(R.id.container)
+    loadFragment()
+  }
 
-        if (fragment == null) {
-            fragment = getFragment()
-            supportFragmentManager.beginTransaction().add(R.id.container, fragment).commit()
-        }
+  private fun loadFragment() {
+
+    if (supportFragmentManager.findFragmentById(id.container) == null) {
+      supportFragmentManager.beginTransaction().add(id.container, getFragment()).commit()
     }
+  }
 }
