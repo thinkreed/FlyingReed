@@ -1,6 +1,7 @@
 .externalNativeBuild
 /keystore.properties
 /local.properties
+/flyingreed.jks
 /captures
 
 
