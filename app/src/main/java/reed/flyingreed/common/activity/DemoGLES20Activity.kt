@@ -2,7 +2,6 @@ package reed.flyingreed.common.activity
 
 import android.app.Activity
 import android.os.Bundle
-import reed.flyingreed.common.widget.DemoGLSurfaceView
 
 /**
  * Created by thinkreed on 2017/7/25.

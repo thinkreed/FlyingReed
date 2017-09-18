@@ -8,7 +8,6 @@ import reed.flyingreed.R
 import reed.flyingreed.R.layout
 import reed.flyingreed.common.model.Model
 import reed.flyingreed.common.presenter.ViewManager
-import reed.flyingreed.common.widget.DragWindow
 import reed.flyingreed.common.widget.IjkVideoView
 
 
@@ -66,6 +65,6 @@ class ActionViewManager(val action: ((Model) -> Unit)?) : ViewManager<Model>() {
   }
 
   companion object {
-    val VIEW_GROUP_ID = 0;
+    val VIEW_GROUP_ID = 0
   }
 }
