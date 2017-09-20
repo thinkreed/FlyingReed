@@ -34,8 +34,8 @@ import reed.flyingreed.music.activity.MusicPlayerActivity
 
 class MusicFragment : Fragment(), View.OnClickListener {
 
-  private var mPlayerService: IPlayerService? = null
-  private var mBlinkingView: View? = null
+  private lateinit var mPlayerService: IPlayerService
+  private lateinit var mBlinkingView: View
 
   private val mHandler by lazy {
     Handler()
@@ -44,7 +44,10 @@ class MusicFragment : Fragment(), View.OnClickListener {
   private val mServiceConnection by lazy {
     object : ServiceConnection {
       override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        mPlayerService = IPlayerService.Stub.asInterface(service)
+        val musicService = IPlayerService.Stub.asInterface(service)
+        if (musicService != null) {
+          mPlayerService = musicService
+        }
       }
 
       override fun onServiceDisconnected(name: ComponentName?) {
@@ -54,9 +57,8 @@ class MusicFragment : Fragment(), View.OnClickListener {
 
 
   override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-      savedInstanceState: Bundle?): View? {
-    return inflater?.inflate(R.layout.fragment_music, container, false)
-  }
+      savedInstanceState: Bundle?): View? = inflater?.inflate(R.layout.fragment_music, container,
+      false)
 
   override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
@@ -117,14 +119,20 @@ class MusicFragment : Fragment(), View.OnClickListener {
 
   override fun onResume() {
     super.onResume()
-    if (mPlayerService!!.isPlaying) {
-      mHandler.post(ShiningTask(getBlinkingView()))
+    try {
+      if (mPlayerService.isPlaying) {
+        mBlinkingView = getBlinkingView()
+        mHandler.post(ShiningTask())
+      }
+    } catch (e: UninitializedPropertyAccessException) {
+      e.printStackTrace()
     }
+
 
   }
 
   private fun getBlinkingView(): View {
-    when (Week.values()[mPlayerService!!.favor]) {
+    when (Week.values()[mPlayerService.favor]) {
       MONDAY -> {
         return monday
       }
@@ -145,7 +153,11 @@ class MusicFragment : Fragment(), View.OnClickListener {
 
   override fun onStop() {
     //reset the blinking view
-    mBlinkingView?.animate()?.alpha(1.0f)?.duration = 0
+    try {
+      mBlinkingView.animate()?.alpha(1.0f)?.duration = 0
+    } catch (e: UninitializedPropertyAccessException) {
+      e.printStackTrace()
+    }
     mHandler.removeCallbacksAndMessages(null)
     super.onStop()
   }
@@ -159,10 +171,15 @@ class MusicFragment : Fragment(), View.OnClickListener {
     super.onDestroy()
   }
 
-  inner class ShiningTask(var view: View) : Runnable {
+  inner class ShiningTask : Runnable {
     override fun run() {
-      val alpha = if (view.alpha == 0f) 1f else 0f
-      view.animate().alpha(alpha).duration = 1000
+      try {
+        val alpha = if (mBlinkingView.alpha == 0f) 1f else 0f
+        mBlinkingView.animate().alpha(alpha).duration = 1000
+      } catch (e: UninitializedPropertyAccessException) {
+        e.printStackTrace()
+      }
+
       //set the delay time a little longer than duration to ensure animation ended
       mHandler.postDelayed(this, 1100)
     }

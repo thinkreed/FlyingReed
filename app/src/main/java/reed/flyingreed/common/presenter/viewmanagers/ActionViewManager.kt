@@ -1,11 +1,8 @@
 package reed.flyingreed.common.presenter.viewmanagers
 
-import android.view.LayoutInflater
 import android.view.View
-import android.view.WindowManager.LayoutParams
 import android.widget.MediaController
 import reed.flyingreed.R
-import reed.flyingreed.R.layout
 import reed.flyingreed.common.model.Model
 import reed.flyingreed.common.presenter.ViewManager
 import reed.flyingreed.common.widget.IjkVideoView
@@ -56,12 +53,6 @@ class ActionViewManager(val action: ((Model) -> Unit)?) : ViewManager<Model>() {
   }
 
   private fun showPlayerPage(v: View, new: Model) {
-    val contentView = LayoutInflater.from(v.context).inflate(layout.fragment_video_player, null)
-    val pop = DragWindow(new, contentView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT,
-        false)
-    pop.isTouchable = true
-    pop.isOutsideTouchable = true
-    pop.showAsDropDown(v)
   }
 
   companion object {
