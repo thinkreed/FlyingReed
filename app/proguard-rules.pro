@@ -289,3 +289,14 @@
 # Bugly
 -dontwarn com.tencent.bugly.**
 -keep public class com.tencent.bugly.**{*;}
+
+-keep public class com.google.android.gms.* { public *; }
+-dontwarn com.google.android.gms.**
+
+# Bugly-TD
+-dontwarn cn.tongdun.bugly.**
+-keep public class cn.tongdun.bugly.**{*;}
+
+-dontwarn android.os.**
+-dontwarn com.android.internal.**
+-keep class cn.tongdun.android.**{*;}
